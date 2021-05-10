@@ -1,11 +1,20 @@
+"use strict";
+/* eslint-disable  */
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const cors=require('cors');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const MongoClient=require('mongodb').MongoClient;
+const client=new MongoClient("mongodb+srv://user1:C4U89mZsd@cluster0.5yjks.mongodb.net/?retryWrites=true&w=majority", { useUnifiedTopology: true });
+let connection;
+const loginRouter=require('./routes/login');
+const signupRouter=require('./routes/signup');
+const coursesRouter=require('./routes/courses');
+const Authorization=require('./aau/autharautho')
 
 var app = express();
 
@@ -18,9 +27,28 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors());
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use(function(req,res,next){
+  if(!connection){
+    console.log("connecting...");
+    client.connect(function(err){
+      if(err) throw err;
+      connection=client.db('CS571FP');
+      req.db=connection;
+      next();
+    })
+  }else{
+    req.db=connection;
+    next();
+  }
+});
+app.use(Authorization.authenticate);
+
+app.use('/api/v1/login',loginRouter);
+app.use('/api/v1/signup',signupRouter);
+app.use('/api/v1/courses',coursesRouter);
+  
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -38,4 +66,9 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+
+app.listen(8000,()=>{
+  console.log('application is running on port : 8000')
+})
+
+// module.exports = app;

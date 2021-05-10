@@ -1,0 +1,16 @@
+{
+    "env": {"node": true, "es6": true, "mocha": true},
+    "extends": "eslint:recommended",
+    "parserOptions": { "ecmaVersion": 2018 },
+    "rules": {
+    "strict": ["error", "global"],
+    "semi": ["warn", "always"],
+    "no-alert": "off",
+    "no-console": "off",
+    "no-debugger": "off",
+    "no-unused-vars": "warn",
+    "id-length": [2, {"min": 3, "max": 20, "exceptions": ["i","a", "n", "id", "j"]}],
+    "camelcase": [2, {"properties": "always"}],
+    "valid-jsdoc": ["error"]
+    }
+}
