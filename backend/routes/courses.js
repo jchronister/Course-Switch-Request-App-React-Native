@@ -136,8 +136,30 @@ function updateSwitchRequest (req, res, next) {
   // Verify & Convert Object Id
   if (!setupMongoObjectIdonReq(req, "body", "offering_id", req.body.offering_id, next)) return ;
 
-  // Verify Data & Get Switch Request Object
-  switchRequestObject(req, req.switchRequest.block_id)
+
+  // Verify Course not Current Course
+
+  req.db.collection("courses").findOne({
+    block_id : req.body.block_id, 
+    "course_offerings.students.student_id": getMongoId(req.token.student_id, next)},
+    {projection: {_id: 0, "course_offerings.$": 1}}
+  )  
+  
+  .then( course => {
+
+    // Verify Current Course
+    if (!course) throw "Cannot Find Students Current Course for Block";
+    
+    // Verify Selected Course is Not Current Course
+    if (course.course_offerings[0].offering_id.toString() === req.body.offering_id.toString()) {
+      throw "Student Already Scheduled for this Course";
+    }
+
+    // Verify Data & Get Switch Request Object
+    return switchRequestObject(req, req.switchRequest.block_id);
+
+  })
+
 
   .then ( request => {
 
@@ -173,13 +195,13 @@ function verifyUserOwnsSwitch (req, res, next) {
     { "$unwind": "$course_offerings" },
     { "$unwind": "$course_offerings.switch_requests" },
     {$match: {"course_offerings.switch_requests.request_id": req.params.request_id }},
-    {$project: {_id: 0, request: "$course_offerings.switch_requests"}}
+    {$project: {_id: 0, block_id: 1, request: "$course_offerings.switch_requests"}}
   ]).toArray()
 
   .then(data => {
 
     // No Match
-    if (!data.length) return next(createError("Invalid Switch Request Id"));
+    if (!data.length) return next(createError("Switch Request Id Not Found"));
     
     // Verify Id's Match
     if(data[0].request.student_id.toString() !== req.token.student_id) {
@@ -187,7 +209,7 @@ function verifyUserOwnsSwitch (req, res, next) {
     }
 
     // Store Request Info
-    req.switchRequest = data[0].request;
+    req.switchRequest = data[0];
 
    next();
     
