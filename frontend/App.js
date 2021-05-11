@@ -4,15 +4,45 @@ import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
+import Main from './components/main'
+import Home from './components/home'
+import Login from './components/login'
+import Signup from './components/signup'
+import ListOfCourses from './components/listOfCourses'
+import LatestPosts from './components/latestPosts'
+import NewSwetchRequest from './components/newSwetchRequest'
+
+
 
 const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name='home' component={Home} options={{
+          title:'Home'
+        }}/>
+        <Stack.Screen name='main' component={Main} options={{
+          title:'Main'
+        }}/>
+        <Stack.Screen name='login' component={Login} options={{
+          title:'Login'
+        }}/>
+        <Stack.Screen name='signup' component={Signup} options={{
+          title:'Signup'
+        }}/>
+        <Stack.Screen name='listofcourses' component={ListOfCourses} options={{
+          title:'List_Of_Courses'
+        }}/>
+        <Stack.Screen name='latestposts' component={LatestPosts} options={{
+          title:'Latest_Posts'
+        }}/>
+        <Stack.Screen name='newswetchrequest' component={NewSwetchRequest} options={{
+          title:'New_Swetch_Request'
+        }}/>
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
