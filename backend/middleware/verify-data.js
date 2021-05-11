@@ -1,6 +1,6 @@
 "use strict";
 
-const {ObjectID, ISODate} = require("mongodb");
+const {ObjectID} = require("mongodb");
 const createError = require('http-errors');
 
 /** Checks for Invalid/Missing Data
@@ -120,52 +120,65 @@ const getMongoId = function (str, next) {
 
 
 /** Convert String to Mongo Id
+* @param {object} req - Request Object
+* @param {string} reqObj - Request Object
 * @param {string} name - Key
 * @param {any} value - Value
-* @param {object} req - Request Object
 * @param {function} next - Next Function for Errors
 * @returns {undefined}
 */
-const setupMongoObjectIdParameter = function (name, value, req, next) {
+const setupMongoObjectIdonReq = function (req, reqObj, name, value, next) {
 
-  const objectId = getMongoId(value);
+  const objectId = getMongoId(value, next);
 
   // Save Id and Proceed if Valid Mongo Object Id
   if (objectId) {
-    req.params[name] = objectId;
-    next();
-  }  
+    req[reqObj][name] = objectId;
+    return true;
+  }
 
 };
 
 
-const switchRequestObject = function (req, next) {
+const switchRequestObject = function (req, block) {
 
-  // Verify Data
-  if (isMissing(["offering_id", "course_id", "course_name", "instructor"], req.body, next)) return;
+  // Get Course Data from offering_id
+  return req.db.collection("courses").findOne({"course_offerings.offering_id": req.body.offering_id},
+    {projection: {_id: 0, block_id: 1, course_offerings: { $elemMatch: { "offering_id": req.body.offering_id } } }}
+  )
 
+  .then (data => {
 
-  // Request Object
-  const request = {
+    // New Course Not Found
+    if (!data) throw "No Course Found for Offering_id " + req.body.offering_id;
 
-    student_id : ObjectID("6098368d6bf8f3231048f654"),
-    student_name : "Elijah Lewis",
-    request_id : new ObjectID(),
-    desired_course : {
-                        offering_id : req.body.offering_id,
-                        course_id : req.body.course_id,
-                        course_name : req.body.course_name,
-                        instructor : req.body.instructor
-                        },
-    notes : req.body.notes || "",
-      //   "status" : null, Not Needed
-    request_date : ISODate(new Date())
+    // Verify Course in Block if Needed
+    if (block && data.block_id !== block) throw "Selected Course Not in Block";
+
+    // Request Object
+    const request = {
+
+      student_id : ObjectID(req.token.student_id),
+      student_name : req.token.student_name,
+      request_id : new ObjectID(),
+      desired_course : {
+                          offering_id : req.body.offering_id,
+                          course_id : data.course_offerings[0].course_id,
+                          course_name : data.course_offerings[0].course_name,
+                          instructor : data.course_offerings[0].instructor
+                          },
+      notes : req.body.notes || "",
+        //   "status" : null, Not Needed
+      request_date : new Date()
 
   };
 
   return request;
 
+  });
+
 };
+
 
 
 module.exports = {
@@ -174,6 +187,6 @@ module.exports = {
   isValid,
   getMongoId,
   doesDataExist,
-  setupMongoObjectIdParameter,
-  switchRequestObject
+  setupMongoObjectIdonReq,
+  switchRequestObject,
 };

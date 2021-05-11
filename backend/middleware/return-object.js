@@ -54,7 +54,7 @@ function loginReturnObject (data) {
   let retrn = {
     student_name: data.student_name,
     email: data.email,
-    student_id: data.student_id
+    student_id: data._id
   };
 
   return getReturnObject(null, Jwtmanager.generet(retrn, process.env.jwtToken));

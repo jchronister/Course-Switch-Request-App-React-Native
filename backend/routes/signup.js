@@ -13,6 +13,10 @@ router.post('/', function (req, res, next) {
   // Verify Valid Data
   if (isMissing(["email", "password", "name"], req.body, next)) return;
 
+  // Verify Email
+  if (!/@miu.edu$/.test(req.body.email)) {
+    return next(createError(400, "Invalid Email, Must End with @miu.edu"));
+  }
 
   req.db.collection('users').findOne({ 'email': req.body.email })
 
