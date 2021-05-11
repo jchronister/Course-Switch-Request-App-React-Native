@@ -5,12 +5,15 @@
     "rules": {
     "strict": ["error", "global"],
     "semi": ["warn", "always"],
+    "quotes": "off",
     "no-alert": "off",
     "no-console": "off",
     "no-debugger": "off",
     "no-unused-vars": "warn",
-    "id-length": [2, {"min": 3, "max": 20, "exceptions": ["i","a", "n", "id", "j"]}],
-    "camelcase": [2, {"properties": "always"}],
-    "valid-jsdoc": ["error"]
+    "id-length": [2, {"min": 2, "max": 30, "exceptions": ["i","a", "n", "id", "j"]}],
+    "camelcase": "off",
+    "valid-jsdoc": ["error"],
+    "require-jsdoc": "off"
+
     }
 }

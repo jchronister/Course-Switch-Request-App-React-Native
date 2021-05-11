@@ -1,5 +1,4 @@
 "use strict";
-/* eslint-disable  */
 
 var createError = require('http-errors');
 var express = require('express');
@@ -14,7 +13,10 @@ let connection;
 const loginRouter=require('./routes/login');
 const signupRouter=require('./routes/signup');
 const coursesRouter=require('./routes/courses');
-const Authorization=require('./aau/autharautho')
+const Authorization=require('./aau/autharautho');
+const dataResetRouter = require("./routes/studentdata");
+
+const {getReturnObject} = require("./middleware/return-object");
 
 var app = express();
 
@@ -33,11 +35,11 @@ app.use(function(req,res,next){
   if(!connection){
     console.log("connecting...");
     client.connect(function(err){
-      if(err) throw err;
+      if(err) return next(createError(500, err));
       connection=client.db('CS571FP');
       req.db=connection;
       next();
-    })
+    });
   }else{
     req.db=connection;
     next();
@@ -45,30 +47,31 @@ app.use(function(req,res,next){
 });
 app.use(Authorization.authenticate);
 
-app.use('/api/v1/login',loginRouter);
-app.use('/api/v1/signup',signupRouter);
+app.use('/api/v1/login', loginRouter);
+app.use('/api/v1/signup', signupRouter);
 app.use('/api/v1/courses',coursesRouter);
+app.use('/api/v1/resetdata',dataResetRouter);
   
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+  next(createError(404, "URL Not Found"));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res, next) {// eslint-disable-line no-unused-vars
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  res.status(err.status || 500).json(getReturnObject(err.message || err, null));
+  // res.render('error');
 });
 
 
 app.listen(8000,()=>{
-  console.log('application is running on port : 8000')
-})
+  console.log('application is running on port : 8000');
+});
 
 // module.exports = app;

@@ -1,66 +1,92 @@
+"use strict";
+
 var express = require('express');
 var router = express.Router();
-const { ObjectId } = require('bson');
-const { MongoClient } = require('mongodb');
+
+const {setupMongoObjectIdParameter, switchRequestObject} = require("../middleware/verify-data");
+const {sendJSON} = require("../middleware/return-object");
 
 
-/*GET /api/v1/courses */
-router.get('/', function (req, res, next) {
+
+// Verify & Set offering_id Mongo Object Id
+router.param("offering_id", (req, res, next, id) => {
+  setupMongoObjectIdParameter("offering_id", id, req, next);  
+});
+
+// Verify & Set request_id Mongo Object Id
+router.param("request_id", (req, res, next, id) => {
+  setupMongoObjectIdParameter("request_id", id, req, next);  
+});
+
+
+// GET /api/v1/courses - Sorted Asc by Date
+router.get('/', function (req, res) {
+
   req.db.collection("courses").aggregate([{ $unwind: "$course_offerings" },
-  { $project: { "_id": 0, course_name: "$course_offerings.course_name", requests_counter: { $size: "$course_offerings.switch_requests" }, course_id: "$course_offerings.course_id" } }]).toArray()
-    .then(resp => {
-      res.json({ status: 'success', result: resp })
-    }).catch(err => {
-      console.log(err)
-    })
+    { $sort : { "begin_data" : 1 } },
+    { $project: { 
+      "_id": 0, 
+      course_name: "$course_offerings.course_name", 
+      requests_counter: { $size: "$course_offerings.switch_requests" }, 
+      course_id: "$course_offerings.course_id",
+      block: "$block_id",
+      offering_id: "$course_offerings.offering_id"
+    } }])
+    .toArray(sendJSON.bind(res));
+
 });
 
 
 /*GET /api/v1/courses/:offering_id */
-router.get('/:offering_id', function (req, res, next) {
-  req.db.collection("courses").find({}).project({ course_offerings: { $elemMatch: { "offering_id": new ObjectId(req.params.offering_id) } } }).toArray()
-    .then(resp => {
-      res.json({ status: 'success', result: resp })
-    }).catch(err => {
-      console.log(err)
-    })
+router.get('/:offering_id', function (req, res) {
+
+  req.db.collection("courses").find({"course_offerings.offering_id": req.params.offering_id})
+    .project({_id: 0, course_offerings: { $elemMatch: { "offering_id": req.params.offering_id } } })
+    .toArray(sendJSON.bind(res));
+
 });
 
 
 /*POST /api/v1/courses/:id */
-router.post('/:course_id', function (req, res, next) {
-  // req.db.collection("courses").updateOne({ course_offerings:{$elemMatch:{offering_id:req.params.offering_id}}},{$push:{'course_offerings.$.switch_requests':req.body}})
-  req.db.collection("courses").updateOne({ "course_offerings.offering_id": ObjectId(req.params.course_id) }, { $push: { "course_offerings.$.switch_requests": req.body } })
-    .then(resp => {
-      res.json({ status: "success" })
-    }).catch(err => {
-      console.log(err);
-    })
+//POST /api/v1/courses/:offering_id/switchrequests/
+router.post('/:offering_id/switchrequests', function (req, res, next) {
+
+  // Verify Data & Get Switch Request Object
+  const data = switchRequestObject(req, next);
+
+  // Send Data
+  if (data) req.db.collection("courses").updateOne(
+    { "course_offerings.offering_id": req.params.offering_id }, 
+    { $push: { "course_offerings.$.switch_requests": data } },
+    sendJSON.bind(res));
+
 });
 
 
 /*PUT /api/v1/courses/:id/posts/post_id */
-router.put('/:course_id/posts/:request_id', function (req, res, next) {
-  req.db.collection("courses").updateOne({},
-    { $set: { "course_offerings.$[objs].switch_requests.$[obj].student_name": "Test" } },
-    { arrayFilters: [{ "objs.offering_id": ObjectId(req.params.course_id) }, { "obj.request_id": ObjectId(req.params.request_id) }] }
-  )
-    .then(resp => {
-      res.json({ status: "success" })
-    }).catch(err => {
-      console.log(err);
-    })
+//PUT /api/v1/courses/:offering_id/switchrequests/:request_id
+router.put('/:offering_id/switchrequests/:request_id', function (req, res, next) {
 
+  // Verify Data & Get Switch Request Object
+  const data = switchRequestObject(req, next);
+
+  // Update data
+  if (data) req.db.collection("courses").updateOne({"course_offerings.offering_id": req.params.offering_id},
+    { $set: { "course_offerings.$[course].switch_requests.$[switch].desired_course": data.desired_course ,
+              "course_offerings.$[course].switch_requests.$[switch].notes": data.notes} },
+    { arrayFilters: [{ "course.offering_id": req.params.offering_id }, { "switch.request_id": req.params.request_id }] },
+    sendJSON.bind(res));
+    
 });
 
 /*DELETE /api/v1/courses/:id/posts/post_id */
-router.delete('/:course_id/posts/:request_id', function (req, res, next) {
-  req.db.collection("courses").updateOne({ "course_offerings.offering_id": ObjectId(req.params.course_id) }, { $pull: { "course_offerings.$.switch_requests": { request_id: ObjectId(req.params.request_id) } } })
-    .then(resp => {
-      res.json({ status: "success" })
-    }).catch(err => {
-      console.log(err);
-    })
+//DELETE /api/v1/courses/:offering_id/switchrequests/:request_id
+router.delete('/:offering_id/switchrequests/:request_id', function (req, res) {
+
+  req.db.collection("courses").updateOne(
+    { "course_offerings.offering_id": req.params.offering_id }, 
+    { $pull: { "course_offerings.$.switch_requests": { request_id: req.params.request_id } } },
+    sendJSON.bind(res));
 
 });
 

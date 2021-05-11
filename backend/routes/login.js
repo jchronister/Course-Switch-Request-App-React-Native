@@ -1,27 +1,33 @@
+"use strict";
 
 var express = require('express');
 var router = express.Router();
-let Jwtmanager = require('../jwt/jwtManager')
+const createError = require('http-errors');
+const bcrypt = require("bcryptjs");
+let {isMissing} = require("../middleware/verify-data");
+const {loginReturnObject} = require("../middleware/return-object");
+
 
 /*POST api/v1/login */
 router.post('/', function (req, res, next) {
-  req.db.collection('users').findOne({ 'email': req.body.email, 'password': req.body.password }) 
-    .then(resp => {
-      if (resp) {
-        //create the object needed
-        let obj = req.body;
 
-        let token = Jwtmanager.generet(obj);
-        // decide on the return object
-        res.json({ status: 'success', result: token})
-      } else {
-        res.json({ status: 'failed user not found,please signup' })
-      }
-    }).catch(err => {
-      console.log(err);
-    })
+  // Verify Valid Data
+  if (isMissing(["email", "password"], req.body, next)) return;
+
+  req.db.collection('users').findOne({email: req.body.email}) 
+    .then(data => {
+
+        // No Username Found
+        if(!data) return next(createError(400, "Invalid Username"));
+    
+        // Verify Password
+        if (!bcrypt.compareSync("" + req.body.password, data.password)) return next(createError(400, "Invalid Password"));
+
+        // Return Token
+        res.json(loginReturnObject(data));
+
+    }).catch(next);
 });
-
 
 
 module.exports = router;

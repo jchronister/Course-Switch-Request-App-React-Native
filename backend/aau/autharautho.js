@@ -1,5 +1,5 @@
 "use strict";
-/* eslint-disable */
+
 
 const Jwtmanager = require('../jwt/jwtManager');
 
@@ -7,8 +7,7 @@ class Authorization {
     authenticate(req, res, next) {
 
         if (req.url === '/api/v1/login' || req.url === '/api/v1/signup') {
-            next();
-            return;
+          return next();
         }
 
         let tokens = req.headers.authorization;
