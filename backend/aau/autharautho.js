@@ -2,8 +2,10 @@
 
 
 const Jwtmanager = require('../jwt/jwtManager');
+const createError = require('http-errors');
 
 class Authorization {
+
     authenticate(req, res, next) {
 
         if (req.url === '/api/v1/login' || req.url === '/api/v1/signup') {
@@ -11,17 +13,19 @@ class Authorization {
         }
 
         let tokens = req.headers.authorization;
-        // console.log(tokens);
+ 
         if (!tokens) {
-            return res.json({ status: 'authentication_error' });
+
+          return next(createError(400, "Missing Token"));
+
         } else {
+
             let data = Jwtmanager.verify(tokens);
-            // console.log(data);
-            if (!data) {
-                return res.json({ status: 'authentication_error' });
-            }
-            // req.role = data.role;
-            // req.id = data.id;
+
+            if (!data) return next(createError(400, "Invalid Token"));
+
+            // Save Token Data
+            req.token = data;
             next();
         }
     }
