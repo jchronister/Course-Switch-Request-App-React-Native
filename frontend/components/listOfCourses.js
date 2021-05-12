@@ -13,7 +13,7 @@ function ListOfCourses() {
         ActionType.getallCourses(state.token, dispatch)
     }, []);
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView >
             {state.allCourses && <FlatList
                 data={state.allCourses}
                 renderItem={({ item }) => <IndividualComponent data={item} />}

@@ -18,7 +18,7 @@ function Signup({ navigation }) {
 
         if (latitude === 41 && longitude === -91) {
             if (mystate.email.endsWith('@miu.edu')) {
-                ActionType.createAccount(mystate,dispatch);
+                ActionType.createAccount(mystate, dispatch);
                 navigation.navigate('home');
             } else {
                 alert('email should matched with @miu.edu')
@@ -61,13 +61,16 @@ function Signup({ navigation }) {
         <View style={styles.container}>
             <Text style={{ fontSize: 20 }}></Text>
             <SafeAreaView >
-            <Text style={{fontSize:20}}>Signup Please</Text>
-                <Text>
-                    <Text>Student_Name: <TextInput style={styles.searchInput} value={mystate.student_Name} onChangeText={(text) => { studentNameHundler(text) }} /></Text>
-                    <Text>Email: <TextInput style={styles.searchInput} value={mystate.email} onChangeText={(text) => { emailHundler(text) }} /></Text>
-                    <Text>Password: <TextInput style={styles.searchInput} value={mystate.password} onChangeText={(text) => { passwordHundler(text) }} /></Text>
-                </Text>
-                <Text><Button title='Submit' onPress={submitHundler} /></Text>
+                <Text style={{ fontSize: 20 }}>Signup Please</Text>
+                <View>
+
+                    <TextInput autoFocus={true} style={styles.searchInput} value={mystate.student_Name} onChangeText={(text) => { studentNameHundler(text) }} />
+                    <TextInput style={styles.searchInput} value={mystate.email} onChangeText={(text) => { emailHundler(text) }} />
+                    <TextInput style={styles.searchInput} value={mystate.password} onChangeText={(text) => { passwordHundler(text) }} />
+
+                    <Text><Button title='Submit' onPress={submitHundler} /></Text>
+                </View>
+
             </SafeAreaView>
         </View>
     )
@@ -79,9 +82,16 @@ const styles = StyleSheet.create({
         flexDirection: 'column'
     },
     searchInput: {
-        height: 30,
-        margin: 12,
+        padding: 10,
+        marginVertical: 10,
+        marginHorizontal: 20,
+        borderColor: '#ccc',
         borderWidth: 1,
+        borderRadius: 3,
+        // height: 30,
+        // margin: 12,
+        // borderWidth: 1,
+        // borderColor:'pink'
     },
 });
 

@@ -5,7 +5,7 @@ import * as ActionType from './action'
 
 
 
-function LatestPosts() {
+function LatestPosts({route}) {
     const [state, dispatch] = React.useContext(myContext);
 
     React.useEffect(() => {
