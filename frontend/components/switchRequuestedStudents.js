@@ -2,40 +2,34 @@ import * as React from 'react';
 import { StyleSheet, Text, SafeAreaView, View, Button, TextInput, FlatList, TouchableOpacity } from 'react-native';
 import myContext from './globalState'
 import * as ActionType from './action'
-import { useNavigation } from '@react-navigation/core';
 
 
 
-function ListOfCourses() {
+function SwitchRequestedStudents({ navigation,route }) {
     const [state, dispatch] = React.useContext(myContext);
 
     React.useEffect(() => {
-        ActionType.getallCourses(state.token, dispatch)
+        const {data}=route.params
+        ActionType.getswetchRequestedStudents(state.token, dispatch,data)
     }, []);
     return (
         <SafeAreaView style={styles.container}>
-            {state.allCourses && <FlatList
-                data={state.allCourses}
+            {state.CourseswichRequestedStudents && <FlatList
+                data={state.CourseswichRequestedStudents}
                 renderItem={({ item }) => <IndividualComponent data={item} />}
-                keyExtractor={item => item.offering_id}
+                keyExtractor={item => item.request_id}
             />}
         </SafeAreaView>
-
     )
 }
 
 const IndividualComponent = ({ data }) => {
-    const  navigation= useNavigation() 
-    const sindleCourseHundler=(data)=>{
-        navigation.navigate('switchrequestedstudents',{data})
-        console.log(data)
-    }
+    
     return (
         <View >
-            <TouchableOpacity onPress={()=>{sindleCourseHundler(data.offering_id)}}>
-            <Text style={styles.text}>{data.course_name}</Text>
-            </TouchableOpacity>
-            <Text style={styles.text}>requests_counter : {data.requests_counter}</Text>
+            <Text style={styles.text}>{data.student_name}</Text>
+            <Text style={styles.text}>{data.desired_course.course_id}</Text>
+            <Text style={styles.text}>{data.desired_course.course_name}</Text>
 
         </View>
     )
@@ -58,4 +52,4 @@ const styles = StyleSheet.create({
 
 
 
-export default ListOfCourses;
+export default SwitchRequestedStudents;

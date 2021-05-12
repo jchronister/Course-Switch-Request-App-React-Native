@@ -1,32 +1,61 @@
 import * as React from 'react';
 import { StyleSheet, Text, SafeAreaView, View, Button, TextInput } from 'react-native';
 import { multiply } from 'react-native-reanimated';
+import myContext from './globalState'
+import * as ActionType from './action'
+import * as Location from 'expo-location';
 
 
-function Signup() {
-    const [state, setState] = React.useState({ student_Name: '', email: '', password: '' });
+function Signup({ navigation }) {
+    const [state, dispatch] = React.useContext(myContext)
+    const [mystate, setState] = React.useState({ name: '', email: '', password: '' });
+    const [location, setLocation] = React.useState({ latitude: null, longitude: null });
 
     const submitHundler = () => {
-        if (state.email.endsWith('@miu.edu')) {
-            console.log(state.student_Name)
-            console.log(state.email)
-            console.log(state.password)
+        let latitude = Math.floor(location.latitude)
+        let longitude = Math.ceil(location.longitude)
+
+
+        if (latitude === 41 && longitude === -91) {
+            if (mystate.email.endsWith('@miu.edu')) {
+                ActionType.createAccount(mystate,dispatch);
+                navigation.navigate('home');
+            } else {
+                alert('email should matched with @miu.edu')
+            }
         } else {
-            console.log('errer')
+            alert('Student required to be at compus location for Course Switch Request')
         }
     }
 
     const studentNameHundler = (text) => {
-        setState({ ...state, student_Name: text })
+        setState({ ...mystate, name: text })
     }
 
     const emailHundler = (text) => {
-        setState({ ...state, email: text })
+        setState({ ...mystate, email: text })
     }
 
     const passwordHundler = (text) => {
-        setState({ ...state, password: text })
+        setState({ ...mystate, password: text })
     }
+
+    React.useEffect(() => {
+        (async () => {
+            let { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                alert('Permission to access location was denied');
+                return;
+            }
+            let location = await Location.getCurrentPositionAsync({});
+            let currentlocation = await location.coords
+            console.log(currentlocation)
+            let { latitude, longitude } = await currentlocation;
+            setLocation((prev) => {
+                return { ...prev, latitude: latitude, longitude: longitude }
+            });
+        })();
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -34,9 +63,9 @@ function Signup() {
             <SafeAreaView >
             <Text style={{fontSize:20}}>Signup Please</Text>
                 <Text>
-                    <Text>Student_Name: <TextInput style={styles.searchInput} value={state.student_Name} onChangeText={(text) => { studentNameHundler(text) }} /></Text>
-                    <Text>Email: <TextInput style={styles.searchInput} value={state.email} onChangeText={(text) => { emailHundler(text) }} /></Text>
-                    <Text>Password: <TextInput style={styles.searchInput} value={state.password} onChangeText={(text) => { passwordHundler(text) }} /></Text>
+                    <Text>Student_Name: <TextInput style={styles.searchInput} value={mystate.student_Name} onChangeText={(text) => { studentNameHundler(text) }} /></Text>
+                    <Text>Email: <TextInput style={styles.searchInput} value={mystate.email} onChangeText={(text) => { emailHundler(text) }} /></Text>
+                    <Text>Password: <TextInput style={styles.searchInput} value={mystate.password} onChangeText={(text) => { passwordHundler(text) }} /></Text>
                 </Text>
                 <Text><Button title='Submit' onPress={submitHundler} /></Text>
             </SafeAreaView>
