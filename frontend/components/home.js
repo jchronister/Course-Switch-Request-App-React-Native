@@ -2,9 +2,11 @@ import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Main from './main'
+import myContext from './globalState'
 
 function Home() {
-    const [state, setState] = React.useState(true);
+    // const [state, setState] = React.useState(true);
+    const[state,dispatch]=React.useContext(myContext)
 
     return (
         <View style={styles.container}>
@@ -12,7 +14,7 @@ function Home() {
                 <Text style={{ fontSize: 20 }}>Well Come To MIU Course Switch Request Application</Text>
             </View>
             <View style={{ flex: 4, justifyContent: 'center', alignItems: 'center' }}>
-                {state ?<Mybutt/> : <Main />}
+                {!state.token ?<Mybutt/> : <Main />}
             </View>
         </View>
     )
