@@ -10,22 +10,30 @@ function Signup({ navigation }) {
     const [state, dispatch] = React.useContext(myContext)
     const [mystate, setState] = React.useState({ name: '', email: '', password: '' });
     const [location, setLocation] = React.useState({ latitude: null, longitude: null });
+    const [error, setError] = React.useState(null);
 
     const submitHundler = () => {
+
+
         let latitude = Math.floor(location.latitude)
         let longitude = Math.ceil(location.longitude)
 
 
         if (latitude === 41 && longitude === -91) {
             if (mystate.email.endsWith('@miu.edu')) {
-                ActionType.createAccount(mystate, dispatch);
-                navigation.navigate('home');
+                ActionType.signin('api/v1/signup', mystate, dispatch, () => navigation.navigate('main'), setError)
             } else {
                 alert('email should matched with @miu.edu')
             }
         } else {
             alert('Student required to be at compus location for Course Switch Request')
         }
+
+
+
+
+
+
     }
 
     const studentNameHundler = (text) => {
@@ -64,10 +72,10 @@ function Signup({ navigation }) {
                 <Text style={{ fontSize: 20 }}>Signup Please</Text>
                 <View>
 
-                    <TextInput autoFocus={true} style={styles.searchInput} value={mystate.student_Name} onChangeText={(text) => { studentNameHundler(text) }} />
-                    <TextInput style={styles.searchInput} value={mystate.email} onChangeText={(text) => { emailHundler(text) }} />
-                    <TextInput style={styles.searchInput} value={mystate.password} onChangeText={(text) => { passwordHundler(text) }} />
-
+                <Text>Name</Text><TextInput autoFocus={true} style={styles.searchInput} value={mystate.student_Name} onChangeText={(text) => { studentNameHundler(text) }} />
+                <Text>Email</Text><TextInput style={styles.searchInput} value={mystate.email} onChangeText={(text) => { emailHundler(text) }} />
+                <Text>Password</Text><TextInput style={styles.searchInput} value={mystate.password} onChangeText={(text) => { passwordHundler(text) }} />
+                    {error && <Text>{error}</Text>}
                     <Text><Button title='Submit' onPress={submitHundler} /></Text>
                 </View>
 

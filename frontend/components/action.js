@@ -2,6 +2,15 @@ import * as React from 'react';
 import axios from 'axios'
 
 
+// Axios Config
+export const Axios = axios.create({
+  baseURL: "http://localhost:8000",
+  headers: {post: {"Content-Type": "application/json"}}
+  }
+);
+
+
+
 export const CHANGE_SHOW_HIDE='CHANGE_SHOW_HIDE'
 export const UPDATE_TOKEN ='UPDATE_TOKEN'
 export const SET_ALL_COURSES ='SET_ALL_COURSES'
@@ -25,37 +34,32 @@ const updateToken=(v)=>{
     }
 }
 
-//function that update token property of global state  
-export const updatetoken=(obj,dispatch)=>{
-    let url='http://localhost:8000/api/v1/login'
-    axios.post(url,obj)
-    .then(resp=>{
-        if(resp.data.status==='Success'){
-           dispatch( updateToken(resp.data.data))
-            console.log(resp.data)
-        }else{
-            alert(resp.data.status)
-        }
-    }).catch(err=>{
-        console.log(err)
-    })
-}
-
 
 //function that update token property of global state  
-export const createAccount=(obj,dispatch)=>{
-    let url='http://localhost:8000/api/v1/signup'
-    axios.post(url,obj)
-    .then(resp=>{
+export const signin=(url, obj, dispatch, fx, errFx) => {
+
+    Axios.post(url,obj)
+
+    .then ( resp => {
+
         if(resp.data.status==='Success'){
-            dispatch( updateToken(resp.data.data))
-            console.log(resp.data)
-        }else{
-            alert(resp.data.status)
+
+            // Set Axios Token
+            axios.defaults.headers.common['Authorization'] = resp.data.data;
+
+            // Update User Info State
+            dispatch(updateToken(resp.data.data))
+
+            // Go to Main Page
+            fx();
+
+        } else {
+            throw resp.data.error
         }
-    }).catch(err=>{
-        console.log(err)
     })
+    
+      // Error Handler Fx
+      .catch(err => errFx(err.message || err))
 }
 
 const setAllCourses=(v)=>{
@@ -128,3 +132,57 @@ export const getLatestPost=(token,dispatch)=>{
         console.log(err)
     })
 }
+
+
+
+// /**
+// *   Axios Request Proxy to Apply Callback Functions & Handle Errors
+// *   @param {Promise} axiosReq - axios Request Returned Promise
+// *   @param {function} thenFx - n Functions to Apply as then
+// *   @param {function} errFx - Error Function
+// */
+// export function axiosRequest (axiosReq, thenFx, errFx) {
+// debugger
+//   // Server Request - Pass Good Data and Throw All Errors
+//   const request = axiosReq.then(data => {
+
+// // debugger
+//     // Return Object Data
+//     if (data.data && data.data.status === "Success") return data.data
+
+//     // Throw Non Server Response Object Error
+//     throw (data.data)
+//   })
+
+//   // Apply Callback Functions
+//   (Array.isArray(thenFx)?thenFx:[thenFx]).reduce((a, n) => a.then(n), request)
+
+//   // Handle Errors
+//   .catch(err => {
+
+// // debugger
+
+//     if (err.response && err.response.data && err.response.data.error) {
+
+//       // Show Server Response Error 
+//       errFx("Server Message\n" + Object.entries(err.response.data).join("\n"))
+    
+//     } else if (err.response  ) {
+
+//       // Show Axios Reponse Error
+//       errFx(err.response)
+
+//     } else {
+
+//       // Other Error
+//       errFx("Request Error" + err.message)
+//       // alert("Request Error.\n" + JSON.stringify(err, null, 2) + "\nSee Console for Details")
+
+//     } 
+
+//   })
+
+//   // Catch All Misc Errors
+//   .catch((err)=>errFx("Unknown Error - Programming Logic Error: " + err))
+
+// }

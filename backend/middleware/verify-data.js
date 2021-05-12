@@ -30,7 +30,7 @@ const isMissing = function (aryRequired, objValues, next, aryRename) {
     // Rename
     missing = missing.map(n => aryRename && aryRename[n] || n);
 
-    next(createError(400, "Missing Data for: " + missing.join(", ")));
+    next(createError("Missing Data for: " + missing.join(", ")));
     return true;
   }
   return false;
@@ -49,7 +49,7 @@ const isExtra = function(aryAllowed, objValues, next) {
 
   // Format Missing Data Return String
   if (extra.length) {
-    next(createError(400, "Extra Invalid Data Included: " + extra.join(", ")));
+    next(createError("Extra Invalid Data Included: " + extra.join(", ")));
     return true;
   }
   return false;
@@ -68,7 +68,7 @@ const isValid = function(key, objValues, valueAry, next) {
 
   // If Key Exists AND Value in Valid
   if (objValues[key] && !valueAry.includes(objValues[key])) {
-    next(createError(400, "Invalid Data for '" + key + "' Needs to be: " + valueAry.join(", ")));
+    next(createError("Invalid Data for '" + key + "' Needs to be: " + valueAry.join(", ")));
     return false;
   }
   return true;
@@ -85,7 +85,7 @@ const doesDataExist = function(objValues, next) {
   let keys = Object.keys(objValues);
 
   if (keys.length === 0) {
-    next(createError(400, "No Data Provided"));
+    next(createError("No Data Provided"));
     return false;
   }
 
@@ -93,7 +93,7 @@ const doesDataExist = function(objValues, next) {
   let invalid = keys.filter(n => isInvalid(objValues[n]));
 
    if (invalid.length) {
-    next(createError(400, "Invalid Data for keys: " + invalid.join(", ")));
+    next(createError("Invalid Data for keys: " + invalid.join(", ")));
     return false;
   } 
   return true;
@@ -112,7 +112,7 @@ const getMongoId = function (str, next) {
 
   } catch (err) {
 
-    next(createError(400, "Invalid Mongo _id: " + str));
+    next(createError("Invalid Mongo _id: " + str));
 
   }
 

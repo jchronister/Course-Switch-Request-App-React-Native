@@ -18,10 +18,10 @@ router.post('/', function (req, res, next) {
     .then(data => {
 
         // No Username Found
-        if(!data) return next(createError(400, "Invalid Username"));
+        if(!data) return next(createError("Invalid Username"));
     
         // Verify Password
-        if (!bcrypt.compareSync("" + req.body.password, data.password)) return next(createError(400, "Invalid Password"));
+        if (!bcrypt.compareSync("" + req.body.password, data.password)) return next(createError("Invalid Password"));
 
         // Return Token
         res.json(loginReturnObject(data));
