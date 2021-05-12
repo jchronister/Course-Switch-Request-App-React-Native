@@ -1,22 +1,23 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Button } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Button, ThemeProvider,Text } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import Main from './main'
 import myContext from './globalState'
 
 function Home() {
     // const [state, setState] = React.useState(true);
-    const[state,dispatch]=React.useContext(myContext)
+    const [state, dispatch] = React.useContext(myContext)
 
     return (
-        <View style={styles.container}>
-            <View style={{ flex: 2, justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ fontSize: 20 }}>Well Come To MIU Course Switch Request Application</Text>
-            </View>
-            <View style={{ flex: 4, justifyContent: 'center', alignItems: 'center' }}>
-                {!state.token ?<Mybutt/> : <Main />}
-            </View>
-        </View>
+        <ThemeProvider >
+            <ThemeProvider >
+                <Text h1>Well Come To MIU Course Switch Request Application</Text>
+            </ThemeProvider>
+            <ThemeProvider>
+                {!state.token ? <Mybutt /> : <Main />}
+            </ThemeProvider>
+        </ThemeProvider>
     )
 }
 
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
 });
 
 const Mybutt = () => {
-    const navigation=useNavigation()
+    const navigation = useNavigation()
 
     const loginHundler = () => {
         navigation.navigate('login')
@@ -37,15 +38,13 @@ const Mybutt = () => {
         navigation.navigate('signup')
     }
     return (
-        <>
-            <View >
-                <Text style={{ fontSize: 20 }}>Please Login/Signup to proceed, Thank you !!</Text>
+        <ThemeProvider>
+            <Text h4>Please Login/Signup to proceed, Thank you !!</Text>
+            <View style={{flex:1,flexDirection:'row'}}>
+                <Button margin={10} title='Login' onPress={loginHundler} />
+                <Button margin={10} title='Signup' onPress={signUpHundler} />
             </View>
-            <Text>
-                <Text><Button title='Login' onPress={loginHundler} /></Text>
-                <Text> <Button title='Signup' onPress={signUpHundler} /></Text>
-            </Text>
-        </>
+        </ThemeProvider>
     )
 }
 

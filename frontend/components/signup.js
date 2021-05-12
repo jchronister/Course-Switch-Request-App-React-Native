@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { StyleSheet, Text, SafeAreaView, View, Button, TextInput } from 'react-native';
+import { StyleSheet, SafeAreaView, View } from 'react-native';
 import { multiply } from 'react-native-reanimated';
+import { Input, ThemeProvider, Text, Button } from 'react-native-elements';
 import myContext from './globalState'
 import * as ActionType from './action'
 import * as Location from 'expo-location';
@@ -66,21 +67,16 @@ function Signup({ navigation }) {
     }, []);
 
     return (
-        <View style={styles.container}>
-            <Text style={{ fontSize: 20 }}></Text>
+        <ThemeProvider>
             <SafeAreaView >
-                <Text style={{ fontSize: 20 }}>Signup Please</Text>
-                <View>
-
-                <Text>Name</Text><TextInput autoFocus={true} style={styles.searchInput} value={mystate.student_Name} onChangeText={(text) => { studentNameHundler(text) }} />
-                <Text>Email</Text><TextInput style={styles.searchInput} value={mystate.email} onChangeText={(text) => { emailHundler(text) }} />
-                <Text>Password</Text><TextInput style={styles.searchInput} value={mystate.password} onChangeText={(text) => { passwordHundler(text) }} />
-                    {error && <Text>{error}</Text>}
-                    <Text><Button title='Submit' onPress={submitHundler} /></Text>
-                </View>
-
+                <Text h3>Signup Please</Text>
+                <Input placeholder='Name' autoFocus={true} style={styles.searchInput} value={mystate.student_Name} onChangeText={(text) => { studentNameHundler(text) }} />
+                <Input placeholder='Email' style={styles.searchInput} value={mystate.email} onChangeText={(text) => { emailHundler(text) }} />
+                <Input placeholder='Password' style={styles.searchInput} value={mystate.password} onChangeText={(text) => { passwordHundler(text) }} />
+                {error && <Text>{error}</Text>}
+                <Button  title='Submit' onPress={submitHundler} />
             </SafeAreaView>
-        </View>
+        </ThemeProvider>
     )
 }
 

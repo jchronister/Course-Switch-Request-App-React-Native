@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {  StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Button, ThemeProvider,Text } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 
 
@@ -20,13 +21,13 @@ function Main() {
     }
 
     return (
-        <View style={styles.container}>
-            <Text>
-               <Text><Button title='ListOfCourses' onPress={ListOfCoursesHundler}/></Text>
-               <Text> <Button title='LatestPos' onPress={LatestPosHundler}/></Text>
-               <Text> <Button title='CreateNewSwitchRequest' onPress={CreateNewSwitchRequestHundler}/></Text>
-            </Text>
-        </View>
+        <ThemeProvider >
+         
+               <Button title='ListOfCourses' onPress={ListOfCoursesHundler}/>
+               <Button title='LatestPos' onPress={LatestPosHundler}/>
+               <Button title='CreateNewSwitchRequest' onPress={CreateNewSwitchRequestHundler}/>
+           
+        </ThemeProvider>
     )
 }
 

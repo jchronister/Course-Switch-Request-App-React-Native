@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { StyleSheet, Text, SafeAreaView, View, Button, TextInput } from 'react-native';
+import { StyleSheet, SafeAreaView, View } from 'react-native';
 import { multiply } from 'react-native-reanimated';
+import { Button, ThemeProvider,Text,Input } from 'react-native-elements';
 import * as ActionType from './action'
 import myContext from './globalState'
 import * as Location from 'expo-location';
@@ -75,18 +76,17 @@ function Login({ navigation }) {
     }, []);
 
     return (
-        <View style={styles.container}>
-            <Text style={{ fontSize: 20 }}></Text>
+        <ThemeProvider>
             <SafeAreaView >
-                <Text style={{ fontSize: 20 }}>Login Please</Text>
+                <Text h3>Login Please</Text>
 
-                <TextInput  style={styles.searchInput} autoFocus={true} placeholder="Email" value={state.email} onChangeText={(text) => { emailHundler(text) }} />
-                <TextInput style={styles.searchInput}  placeholder="Password"  value={state.password} onChangeText={(text) => { passwordHundler(text) }} />
+                <Input  style={styles.searchInput} autoFocus={true} placeholder="Email" value={state.email} onChangeText={(text) => { emailHundler(text) }} />
+                <Input style={styles.searchInput}  placeholder="Password"  value={state.password} onChangeText={(text) => { passwordHundler(text) }} />
 
                 {error && <Text>{error}</Text>}
-                <Text><Button title='Submit' onPress={submitHundler} /></Text>
+                <Button title='Submit' onPress={submitHundler} />
             </SafeAreaView>
-        </View>
+        </ThemeProvider>
     )
 }
 

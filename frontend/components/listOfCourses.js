@@ -1,8 +1,10 @@
 import * as React from 'react';
-import { StyleSheet, Text, SafeAreaView, View, Button, TextInput, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, SafeAreaView, View, FlatList, TouchableOpacity } from 'react-native';
+import { Button, ThemeProvider,Text } from 'react-native-elements';
 import myContext from './globalState'
 import * as ActionType from './action'
 import { useNavigation } from '@react-navigation/core';
+import color from 'color';
 
 
 
@@ -31,13 +33,16 @@ const IndividualComponent = ({ data }) => {
         console.log(data)
     }
     return (
-        <View >
+        <ThemeProvider >
+            
+            <View style={{backgroundColor:'white',flex:1,borderWidth:10,borderRadius:10,borderColor:'black'}}>
             <TouchableOpacity onPress={()=>{sindleCourseHundler(data.offering_id)}}>
-            <Text style={styles.text}>{data.course_name}</Text>
+            <Text h4 style={{margin:10,padding:5, color:'grey' }}>course_name : {data.course_name}</Text>
             </TouchableOpacity>
-            <Text style={styles.text}>requests_counter : {data.requests_counter}</Text>
+            <Text h4 style={{margin:10,padding:10, color:'blue'}}>requests_counter : {data.requests_counter}</Text>
+            </View>
 
-        </View>
+        </ThemeProvider>
     )
 }
 
