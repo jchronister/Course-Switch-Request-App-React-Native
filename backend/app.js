@@ -65,7 +65,8 @@ app.use(function(err, req, res, next) {// eslint-disable-line no-unused-vars
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 500).json(getReturnObject(err.message || err, null));
+  // res.status(err.status || 200).json(getReturnObject(err.message || err, null));
+  res.status(200).json(getReturnObject(err.message || err, null));
   // res.render('error');
 });
 

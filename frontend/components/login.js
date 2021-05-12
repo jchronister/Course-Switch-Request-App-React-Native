@@ -15,18 +15,30 @@ function Login({ navigation }) {
     const [mystate, setState] = React.useState({ email: '', password: '' });
     const [location, setLocation] = React.useState({ latitude: null, longitude: null });
 
+    const [error, setError] = React.useState(null);
+
     const submitHundler = () => {
+      // debugger
+        // let latitude = Math.floor(location.latitude)
+        // let longitude = Math.ceil(location.longitude)
+        let latitude = location.latitude
+        let longitude = location.longitude
+       
+	  // MIU Boundary's
+    if (
 
-        let latitude = Math.floor(location.latitude)
-        let longitude = Math.ceil(location.longitude)
+      // Between South & North Boundary
+      ( latitude >= 41.0147347 && latitude <= 41.0321724) 
+	      && 
+	    // Between West & East
+      ( longitude >= -91.9709155 && longitude <= -91.9582494)
+      
+      ) {
 
-        if (latitude === 41 && longitude === -91) {
-            if (mystate.email.endsWith('@miu.edu')) {
-                ActionType.updatetoken(mystate, dispatch)
-                navigation.navigate('main');
-            } else {
-                alert('email should matched with @miu.edu')
-            }
+        // if (latitude === 41 && longitude === -91) {
+
+          ActionType.signin('/api/v1/login', mystate, dispatch, () => navigation.navigate('main'), setError)
+
         } else {
             alert('Student required to be at compus location for Course Switch Request')
         }
@@ -35,14 +47,17 @@ function Login({ navigation }) {
 
     const emailHundler = (text) => {
         setState({ ...mystate, email: text })
+        setError(null)
     }
     const passwordHundler = (text) => {
         setState({ ...mystate, password: text })
+        setError(null)
     }
 
 
     React.useEffect(() => {
         (async () => {
+          try{
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 alert('Permission to access location was denied');
@@ -55,6 +70,7 @@ function Login({ navigation }) {
             setLocation((prev) => {
                 return { ...prev, latitude: latitude, longitude: longitude }
             });
+          } catch (e) {setError(e)}
         })();
     }, []);
 
@@ -67,6 +83,7 @@ function Login({ navigation }) {
                 <TextInput  style={styles.searchInput} autoFocus={true} placeholder="Email" value={state.email} onChangeText={(text) => { emailHundler(text) }} />
                 <TextInput style={styles.searchInput}  placeholder="Password"  value={state.password} onChangeText={(text) => { passwordHundler(text) }} />
 
+                {error && <Text>{error}</Text>}
                 <Text><Button title='Submit' onPress={submitHundler} /></Text>
             </SafeAreaView>
         </View>
