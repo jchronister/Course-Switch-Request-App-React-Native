@@ -1,19 +1,20 @@
 import * as React from 'react';
-import { StyleSheet, Text, SafeAreaView, View, Button, TextInput, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, SafeAreaView, View, TextInput, FlatList, TouchableOpacity } from 'react-native';
+import { Button, ThemeProvider, Text } from 'react-native-elements';
 import myContext from './globalState'
 import * as ActionType from './action'
 
 
 
-function SwitchRequestedStudents({ navigation,route }) {
+function SwitchRequestedStudents({ navigation, route }) {
     const [state, dispatch] = React.useContext(myContext);
 
     React.useEffect(() => {
-        const {data}=route.params
-        ActionType.getswetchRequestedStudents(state.token, dispatch,data)
+        const { data } = route.params
+        ActionType.getswetchRequestedStudents(state.token, dispatch, data)
     }, []);
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView >
             {state.CourseswichRequestedStudents && <FlatList
                 data={state.CourseswichRequestedStudents}
                 renderItem={({ item }) => <IndividualComponent data={item} />}
@@ -24,14 +25,16 @@ function SwitchRequestedStudents({ navigation,route }) {
 }
 
 const IndividualComponent = ({ data }) => {
-    
-    return (
-        <View >
-            <Text style={styles.text}>{data.student_name}</Text>
-            <Text style={styles.text}>{data.desired_course.course_id}</Text>
-            <Text style={styles.text}>{data.desired_course.course_name}</Text>
 
-        </View>
+    return (
+        <ThemeProvider>
+            <View style={{ backgroundColor: 'white', flex: 1, borderWidth: 10, borderRadius: 10, borderColor: 'black' }}>
+                <Text h4 style={{ margin: 10, padding: 10, color: 'blue' }}>student_name : {data.student_name}</Text>
+                <Text h4 style={{ margin: 10, padding: 10, color: 'grey' }}> desired_course_id : {data.desired_course.course_id}</Text>
+                <Text h4 style={{ margin: 10, padding: 10, color: 'purpel' }}>desired_course_name : {data.desired_course.course_name}</Text>
+
+            </View>
+        </ThemeProvider>
     )
 }
 

@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, Text, SafeAreaView, View, Button, TextInput, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, SafeAreaView, View, FlatList, } from 'react-native';
+import { Button, ThemeProvider, Text } from 'react-native-elements';
 import myContext from './globalState'
 import * as ActionType from './action'
 
@@ -13,30 +14,29 @@ function LatestPosts() {
         ActionType.getLatestPost(state.token, dispatch)
     }, []);
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView >
             {state.latestPost && <FlatList
                 data={state.latestPost}
                 renderItem={({ item }) => <IndividualComponent data={item} />}
-                keyExtractor={item => item.course_offerings.offering_id}
+                keyExtractor={item => item.course_offerings.switch_requests.request_id}
             />}
         </SafeAreaView>
     )
 }
 
 const IndividualComponent = ({ data }) => {
-    
-    return (
-        <View >
-             <Text style={styles.text}>{data.course_offerings.switch_requests.student_name}</Text>
-            <Text style={styles.text}>{data.course_offerings.course_name}</Text>
-            <Text style={styles.text}>{data.course_offerings.switch_requests.desired_course.course_name}</Text>
-            <Text style={styles.text}>{data.course_offerings.notes}</Text>
-            <Text>
-                <Button title='Update'/>
-                <Button title='Delete'/>
-            </Text>
 
-        </View>
+    return (
+        <ThemeProvider>
+            <View style={{ backgroundColor: 'white', flex: 1, borderWidth: 10, borderRadius: 10, borderColor: 'black' }}>
+                <Text h4 style={{ margin: 10, padding: 5, color: 'grey' }} > student_name :{data.course_offerings.switch_requests.student_name}</Text>
+                <Text h4 style={{ margin: 10, padding: 5, color: 'grey' }}> current_course_name :{data.course_offerings.course_name}</Text>
+                <Text h4 style={{ margin: 10, padding: 5, color: 'grey' }}>desired_course_name :{data.course_offerings.switch_requests.desired_course.course_name}</Text>
+                <Text h4 style={{ margin: 10, padding: 5, color: 'grey' }}>notes :{data.course_offerings.notes}</Text>
+            </View>
+            <Button title='Update' />
+            <Button title='Delete' />
+        </ThemeProvider>
     )
 }
 
