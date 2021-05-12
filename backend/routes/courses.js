@@ -1,5 +1,10 @@
 "use strict";
 
+
+// Shell Connection
+// mongo "mongodb+srv://cluster0.5yjks.mongodb.net/myFirstDatabase" --username user1
+// C4U89mZsd
+
 var express = require('express');
 var router = express.Router();
 const createError = require('http-errors');
@@ -19,12 +24,15 @@ router.route("/switchrequests")
 router.route("/:offering_id")
   .get(getCourseOfferingById);
 
+router.route("/block/:offering_id")
+  .get(getAllBlockCoursesById);
+
 router.route("/switchrequests/:request_id")
   .all(verifyUserOwnsSwitch)
   .put(updateSwitchRequest)
   .delete(deleteSwitchRequest);
 
-
+ 
 
 // Verify & Set offering_id Mongo Object Id
 router.param("offering_id", (req, res, next, id) => {
@@ -231,6 +239,15 @@ function getSwitchRequestsbyDateDesc(req, res) {
   ]).toArray(sendJSON.bind(res));
 
 
+
+}
+
+// Get Course Block Containing Course
+function getAllBlockCoursesById (req, res) {
+
+  req.db.collection("courses")
+    .find({"course_offerings.offering_id": req.params.offering_id})
+    .toArray(sendJSON.bind(res));
 
 }
 

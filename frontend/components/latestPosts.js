@@ -17,7 +17,7 @@ function LatestPosts() {
             {state.latestPost && <FlatList
                 data={state.latestPost}
                 renderItem={({ item }) => <IndividualComponent data={item} />}
-                keyExtractor={item => item.course_offerings.offering_id}
+                keyExtractor={item => item.course_offerings.switch_requests.request_id}
             />}
         </SafeAreaView>
     )

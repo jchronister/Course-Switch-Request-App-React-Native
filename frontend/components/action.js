@@ -1,5 +1,5 @@
 import * as React from 'react';
-import axios from 'axios'
+import axios from 'axios';
 
 
 // Axios Config
@@ -45,7 +45,7 @@ export const signin=(url, obj, dispatch, fx, errFx) => {
         if(resp.data.status==='Success'){
 
             // Set Axios Token
-            axios.defaults.headers.common['Authorization'] = resp.data.data;
+            Axios.defaults.headers.common['Authorization'] = resp.data.data;
 
             // Update User Info State
             dispatch(updateToken(resp.data.data))
@@ -186,3 +186,24 @@ export const getLatestPost=(token,dispatch)=>{
 //   .catch((err)=>errFx("Unknown Error - Programming Logic Error: " + err))
 
 // }
+
+
+export function callAxios(method, url, fx, errFx, options) {
+
+  Axios[method](url, options)
+
+  .then ( resp => {
+
+      if(resp.data.status==='Success'){
+
+          // Execute Callback
+          fx(resp.data.data);
+
+      } else {
+          throw resp.data.error
+      }
+  })
+  
+    // Error Handler Fx
+    .catch(err => errFx(err.message || err))
+}
