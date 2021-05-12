@@ -6,7 +6,7 @@ export const CHANGE_SHOW_HIDE='CHANGE_SHOW_HIDE'
 export const UPDATE_TOKEN ='UPDATE_TOKEN'
 export const SET_ALL_COURSES ='SET_ALL_COURSES'
 export const SET_SWETCH_REQUESTED_STUDENTS ='SET_SWETCH_REQUESTED_STUDENTS'
-export const SET_CURRENT_COURSES ='SET_CURRENT_COURSES'
+export const SET_LATEST_POST ='SET_LATEST_POST'
 
 
 
@@ -106,20 +106,20 @@ export const getswetchRequestedStudents=(token,dispatch,data)=>{
     })
 }
 
-const setCurrentCurse=(v)=>{
+const setlatestPoste=(v)=>{
     return {
-        type:SET_CURRENT_COURSES ,
+        type:SET_LATEST_POST ,
         payload:v
     }
 }
 
 export const getLatestPost=(token,dispatch)=>{
-    let url=`http://localhost:8000/api/v1/courses`
+    let url=`http://localhost:8000/api/v1/courses/switchrequests`
     axios.get(url,{headers:{'Authorization':token}})
     .then(resp=>{
         if(resp.data.status==='Success'){
-            dispatch( setSwetchRequest(resp.data.data[0].course_offerings[0].switch_requests))
-            dispatch(setCurrentCurse(resp.data.data[0].course_offerings[0].course_name))
+            dispatch( setlatestPoste(resp.data.data))
+            // console.log(resp.data.data)
             console.log(resp.data)
         }else{
             alert(resp.data.status)

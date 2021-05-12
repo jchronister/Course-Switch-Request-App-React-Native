@@ -4,7 +4,7 @@ import * as ActionType from './action'
 
 
 
-export const initialState={showHide:true,token:null,allCourses:[],CourseswichRequestedStudents:[],currentCourse:''}
+export const initialState={showHide:true,token:null,allCourses:[],CourseswichRequestedStudents:[],latestPost:[]}
 
 const Reducer=(state,action)=>{
     if(action.type===ActionType.CHANGE_SHOW_HIDE){
@@ -19,8 +19,8 @@ const Reducer=(state,action)=>{
     if(action.type===ActionType.SET_SWETCH_REQUESTED_STUDENTS){
         return {...state,CourseswichRequestedStudents:action.payload}
     }
-    if(action.type===ActionType.SET_CURRENT_COURSES){
-        return {...state,currentCourse:action.payload}
+    if(action.type===ActionType.SET_LATEST_POST){
+        return {...state,latestPost:action.payload}
     }
 
     return state;

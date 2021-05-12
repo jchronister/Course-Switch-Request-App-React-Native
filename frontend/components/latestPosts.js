@@ -5,19 +5,19 @@ import * as ActionType from './action'
 
 
 
-function LatestPosts({route}) {
+function LatestPosts() {
     const [state, dispatch] = React.useContext(myContext);
 
     React.useEffect(() => {
-        const {data}=route.params
-        ActionType.getswetchRequestedStudents(state.token, dispatch,data)
+        // const {data}=route.params
+        ActionType.getLatestPost(state.token, dispatch)
     }, []);
     return (
         <SafeAreaView style={styles.container}>
-            {state.CourseswichRequestedStudents && <FlatList
-                data={state.CourseswichRequestedStudents}
+            {state.latestPost && <FlatList
+                data={state.latestPost}
                 renderItem={({ item }) => <IndividualComponent data={item} />}
-                keyExtractor={item => item.request_id}
+                keyExtractor={item => item.course_offerings.offering_id}
             />}
         </SafeAreaView>
     )
@@ -27,9 +27,14 @@ const IndividualComponent = ({ data }) => {
     
     return (
         <View >
-            <Text style={styles.text}>{data.student_name}</Text>
-            <Text style={styles.text}>{data.desired_course.course_id}</Text>
-            <Text style={styles.text}>{data.desired_course.course_name}</Text>
+             <Text style={styles.text}>{data.course_offerings.switch_requests.student_name}</Text>
+            <Text style={styles.text}>{data.course_offerings.course_name}</Text>
+            <Text style={styles.text}>{data.course_offerings.switch_requests.desired_course.course_name}</Text>
+            <Text style={styles.text}>{data.course_offerings.notes}</Text>
+            <Text>
+                <Button title='Update'/>
+                <Button title='Delete'/>
+            </Text>
 
         </View>
     )
