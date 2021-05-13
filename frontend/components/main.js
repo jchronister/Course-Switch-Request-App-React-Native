@@ -16,16 +16,16 @@ function Main() {
         // console.log('LatestPos' )
     }
     const CreateNewSwitchRequestHundler=()=>{
-        navigation.navigate('newswetchrequest')
+        navigation.navigate('studentCourses')
         // console.log('CreateNewSwitchRequest')
     }
 
     return (
         <ThemeProvider >
          
-               <Button title='ListOfCourses' onPress={ListOfCoursesHundler}/>
-               <Button title='LatestPos' onPress={LatestPosHundler}/>
-               <Button title='CreateNewSwitchRequest' onPress={CreateNewSwitchRequestHundler}/>
+               <Button title='List Of Courses' onPress={ListOfCoursesHundler}/>
+               <Button title='Latest Switch Reqest Posts' onPress={LatestPosHundler}/>
+               <Button title='My Classes & Switch Requests' onPress={CreateNewSwitchRequestHundler}/>
            
         </ThemeProvider>
     )

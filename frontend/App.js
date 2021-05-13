@@ -11,12 +11,12 @@ import Login from './components/login'
 import Signup from './components/signup'
 import ListOfCourses from './components/listOfCourses'
 import LatestPosts from './components/latestPosts'
-import NewSwetchRequest from './components/upsertSwitchRequest'
+import UpsertSwitchRequest from './components/upsertSwitchRequest';
 import myContext from './components/globalState'
 import Reducer from './components/reducer'
 import { initialState } from './components/reducer'
 import SwitchRequestedStudents from './components/switchRequuestedStudents';
-
+import StudentOwnCourseView from "./components/studentCourses";
 
 const Stack = createStackNavigator();
 
@@ -45,11 +45,14 @@ export default function App() {
             <Stack.Screen name='latestposts' component={LatestPosts} options={{
               title: 'Latest_Posts'
             }} />
-            <Stack.Screen name='newswetchrequest' component={NewSwetchRequest} options={{
-              title: 'New_Swetch_Request'
+            <Stack.Screen name='UpsertSwitchRequest' component={UpsertSwitchRequest} options={{
+              title: 'Switch Request'
             }} />
             <Stack.Screen name='switchrequestedstudents' component={SwitchRequestedStudents} options={{
               title: 'Switch_Requested_Students'
+            }} />
+            <Stack.Screen name='studentCourses' component={StudentOwnCourseView} options={{
+              title: 'Current Scheduled Courses'
             }} />
           </Stack.Navigator>
         </NavigationContainer>

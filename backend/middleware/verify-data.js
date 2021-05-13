@@ -168,7 +168,7 @@ const switchRequestObject = function (req, block) {
                           instructor : data.course_offerings[0].instructor
                           },
       notes : req.body.notes || "",
-        //   "status" : null, Not Needed
+      status : req.body.status || null,
       request_date : new Date()
 
   };

@@ -1,20 +1,22 @@
+/* eslint-disable react/prop-types */
 import React, {useEffect, useState} from 'react';
-import { StyleSheet, Text, SafeAreaView, View, TextInput } from 'react-native';
+import { StyleSheet, Text, SafeAreaView, View, ScrollView } from 'react-native';
 
 import { CheckBox, Input, Button } from 'react-native-elements';
 
-import {callAxios, Axios} from "./action";
+import {callAxios} from "./action";
 
-import jwt from 'jsonwebtoken';
+import jwt from "jwt-decode";
 import myContext from './globalState';
 
 
-export default function NewSwetchRequest ({navigation}){
+export default function UpsertSwitchRequest ({navigation, route: {params}}){
 
   const [{token}] = React.useContext(myContext);
 
-  const currentCourseId = "6099792f44997eca685ab2ec"
-
+  // const currentCourseOfferingId = "6099792f44997eca685ab2ec"/////..../??????
+  // route:{param:{offering_id}}
+  
   // Form State
   const [state, setState] = useState({
     currentCourse: "",
@@ -25,18 +27,22 @@ export default function NewSwetchRequest ({navigation}){
   });
   
   const [error, setError] = React.useState(null);
+  const [warning, setWarning] = React.useState(null);
 
+    // Clear Warning
+    useEffect( () => setWarning(null), [state]);
+
+    // Retrieve Student Data
     useEffect( () => {
 
-      
-      // props.offering_id
-      
+      // Verify Course Id
+      if (!(params && params.offering_id)) return setError("Error No Course Offering Id Passed");   
 
       // Read User Info From Token
-      const {payload: user} = jwt.decode(token, {complete: true});
-      
+      const user = jwt(token, {complete: true});
+
       // Request Data
-      callAxios("get", "/api/v1/courses/block/" + currentCourseId,
+      callAxios("get", "/api/v1/courses/block/" + params.offering_id,
 
         // Set State with Returned Data
         (data) => setState(s => {
@@ -51,8 +57,8 @@ export default function NewSwetchRequest ({navigation}){
                 course_id: n.course_id,
                 course_name: n.course_name,
                 instructor: n.instructor,
-                block_id: data[0].block_id
               };
+              info.block_id = data[0].block_id;
               break;
             }
           }
@@ -67,22 +73,27 @@ export default function NewSwetchRequest ({navigation}){
                 info.requestedCourseOfferingId = i.desired_course.offering_id;
                 info.notes = i.notes;
                 info.switchRequestId = i.request_id;
-                
                 break;
               }
             }
             if (info.switchRequestId) break;
           }
-
+          
           // Get Courses Offered
           info.courseOfferings = data[0].course_offerings.map(
             ({offering_id, course_id, course_name, instructor}) =>
             ({offering_id, course_id, course_name, instructor})
-          ).filter(n => n.offering_id !== info.currentCourseInfo.offering_id);
+          ).filter(n => !info.currentCourseInfo || n.offering_id !== info.currentCourseInfo.offering_id);
 
-          if (info.currentCourseInfo.offering_id !== currentCourseId) setError("User Not Currently in Selected Course");
+          // Error User Not Scheduled for Course
+          if (info.currentCourseInfo && info.currentCourseInfo.offering_id !== params.offering_id) setError("User Not Currently in Selected Course");
+          
+          // I cause and Error ??? Cannot Modify while updating another component
+          // Set Header
+          // navigation.setOptions({headerTitle: info.switchRequestId ? "Edit Switch Request" : "Create Switch Request"});
+
           setState({...s, ...info});
-
+        
         })
 
           // Data Fetch Error Fx
@@ -91,9 +102,9 @@ export default function NewSwetchRequest ({navigation}){
     );}, []);
 
  
-
     return (
-        <View style={styles.containter}>
+        <SafeAreaView>
+        <ScrollView style={styles.containter}>
 
             {error ? <Text style={styles.error}>{error}</Text>
 
@@ -119,7 +130,9 @@ export default function NewSwetchRequest ({navigation}){
                   checkedIcon='dot-circle-o'
                   uncheckedIcon='circle-o'
                   checked={state.requestedCourseOfferingId === n.offering_id}
-                  onPress={() => setState(s => ({...s, requestedCourseOfferingId: n.offering_id}))}
+                  onPress={() => {
+                    setState(s => ({...s, requestedCourseOfferingId: n.offering_id}));
+                  }}
                   />
               ))}
 
@@ -131,7 +144,7 @@ export default function NewSwetchRequest ({navigation}){
               value={state.notes}
               onChangeText={(text) => setState((s) => ({...s, notes: text}))}/>
 
-            <Text>Status:</Text>
+            <Text style={styles.title}>Status:</Text>
 
   {/* Status CheckBoxes */}
   {state.switchRequestId &&
@@ -155,28 +168,47 @@ export default function NewSwetchRequest ({navigation}){
   </View>
   }
 
+  {warning && <Text style={styles.error}>{warning}</Text>}
+
   <View style={styles.buttons}>
 
     {/* Add/Update Button */}
     <View style={styles.button}>
       <Button
         title={state.switchRequestId ? "Update" : "Add"}
-        onPress={()=>{ 
-
-          debugger
-          Axios.put("/api/v1/courses/switchrequests/" + state.switchRequestId,
+        onPress={()=>{
           
-             {offering_id: state.requestedCourseOfferingId, notes: state.notes, status: state.status, block_id: state.currentCourseInfo.block_id})
-          .then((data) => {
+          // Update or Add Parameters
+          if (state.switchRequestId) {
+            var method = "put";
+            var url = "/api/v1/courses/switchrequests/" + state.switchRequestId;
+          } else {
+            method = "post";
+            url = "/api/v1/courses/switchrequests";            
+          }
 
-            navigation.goBack();
-            // setError(JSON.stringify(data))
-            
-          })
-          .catch(err=>setError(err.message));
+          // Send Request
+          callAxios(method, url, 
 
+          // Handle Success
+          (data) => {
+            if (data === 1) {
+              navigation.goBack();
+            } else {
+              setWarning("Data Not Changed");
+            }
+          },
 
-          
+          // Error Catch Fx
+          err => {
+            if (err === "Missing Data for: offering_id") {
+              setWarning("Please Select Course");
+            } else {
+              setError(err);
+            }
+          },
+          {offering_id: state.requestedCourseOfferingId, notes: state.notes, status: state.status, block_id: state.block_id}
+          );   
         }}
         />
     </View>
@@ -186,10 +218,15 @@ export default function NewSwetchRequest ({navigation}){
       <Button
         title="Delete"
         onPress={()=>{ 
+
           callAxios("delete", "/api/v1/courses/switchrequests/" + state.switchRequestId, 
           (data) => {
-            // setError(JSON.stringify(data)
-            navigation.goBack()
+
+            if (data === 1) {
+              navigation.goBack();
+            } else {
+              setError("Internal Error: Switch Request Not Deleted");
+            }
           },
           setError);
         }}
@@ -199,20 +236,10 @@ export default function NewSwetchRequest ({navigation}){
   </View>
 
 </>}
-        </View>
+        </ScrollView>
+        </SafeAreaView>
     );
 
-
-
-  //   "desired_course": {
-  //     "offering_id": "609980c68d2340ba98c45362",
-  //     "course_id": "CS401 ",
-  //     "course_name": "Modern Programming Practices ",
-  //     "instructor": "Anthony Sander "
-  // },
-  // "notes": "",
-  // "status": null,
-  // "request_date": "2021-05-09T05:00:00.000Z",
 }
 
 
@@ -235,7 +262,8 @@ const styles = StyleSheet.create({
 
   title: {
     fontSize:15,
-    padding: 10
+    padding: 10,
+    textDecorationLine: 'underline'
   },
 
   currentCourse: {

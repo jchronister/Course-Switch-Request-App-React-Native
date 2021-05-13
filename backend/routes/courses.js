@@ -5,7 +5,7 @@
 // mongo "mongodb+srv://cluster0.5yjks.mongodb.net/myFirstDatabase" --username user1
 // C4U89mZsd
 
-var express = require('express');
+var express = require('express'); 
 var router = express.Router();
 const createError = require('http-errors');
 
@@ -16,6 +16,9 @@ const {sendJSON} = require("../middleware/return-object");
 // Routes
 router.route("/")
   .get(getCourseOfferingsByDateAsc);
+
+router.route("/student")
+  .get(getStudentCourses);
 
 router.route("/switchrequests")
   .get(getSwitchRequestsbyDateDesc)
@@ -139,14 +142,12 @@ function addSwitchRequest (req, res, next) {
 function updateSwitchRequest (req, res, next) {
 
   // Verify Required Data is Present
-  if (isMissing(["offering_id"], req.body, next)) return;
+  if (isMissing(["offering_id", "block_id"], req.body, next)) return;
 
   // Verify & Convert Object Id
   if (!setupMongoObjectIdonReq(req, "body", "offering_id", req.body.offering_id, next)) return ;
 
-
-  // Verify Course not Current Course
-
+  // Verify Course not Current Course ???Should be able to do with request Id
   req.db.collection("courses").findOne({
     block_id : req.body.block_id, 
     "course_offerings.students.student_id": getMongoId(req.token.student_id, next)},
@@ -172,9 +173,10 @@ function updateSwitchRequest (req, res, next) {
   .then ( request => {
 
     // Update data
-    if (request) req.db.collection("courses").updateOne({},
-      { $set: { "course_offerings.$[].switch_requests.$[switch].desired_course": request.desired_course ,
-                "course_offerings.$[].switch_requests.$[switch].notes": request.notes} },
+    if (request) req.db.collection("courses").updateOne({"course_offerings.switch_requests.request_id": req.params.request_id},
+      { $set: { "course_offerings.$[].switch_requests.$[switch].desired_course": request.desired_course,
+                "course_offerings.$[].switch_requests.$[switch].notes": request.notes,
+                "course_offerings.$[].switch_requests.$[switch].status": request.status} },
       { arrayFilters: [{ "switch.request_id": req.params.request_id }] },
       sendJSON.bind(res));
 
@@ -188,7 +190,7 @@ function updateSwitchRequest (req, res, next) {
 // router.delete('/switchrequests/:request_id', verifyUserOwnsSwitch, function (req, res) {
 function deleteSwitchRequest (req, res) {
 
-  req.db.collection("courses").updateOne({},
+  req.db.collection("courses").updateOne({"course_offerings.switch_requests.request_id": req.params.request_id},
     { $pull: { "course_offerings.$[].switch_requests": { request_id: req.params.request_id } } },
     sendJSON.bind(res));
 
@@ -248,6 +250,19 @@ function getAllBlockCoursesById (req, res) {
   req.db.collection("courses")
     .find({"course_offerings.offering_id": req.params.offering_id})
     .toArray(sendJSON.bind(res));
+
+}
+
+// Get All Student Courses by Date
+function getStudentCourses (req, res, next) {
+
+  req.db.collection("courses").aggregate([
+    { "$unwind": "$course_offerings" },
+    { $match: {"course_offerings.students.student_id": getMongoId(req.token.student_id, next)} },
+    { $sort : { "begin_data" : 1 } }
+    
+  ]).toArray(sendJSON.bind(res));
+
 
 }
 

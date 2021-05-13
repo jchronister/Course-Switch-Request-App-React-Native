@@ -48,19 +48,19 @@ export const signin=(url, obj, dispatch, fx, errFx) => {
             Axios.defaults.headers.common['Authorization'] = resp.data.data;
 
             // Update User Info State
-            dispatch(updateToken(resp.data.data))
+            dispatch(updateToken(resp.data.data));
 
             // Go to Main Page
             fx();
 
         } else {
-            throw resp.data.error
+            throw resp.data.error;
         }
     })
     
       // Error Handler Fx
-      .catch(err => errFx(err.message || err))
-}
+      .catch(err => errFx(err.message || err));
+};
 
 const setAllCourses=(v)=>{
     return {
@@ -122,7 +122,7 @@ export const getLatestPost=(token,dispatch)=>{
     axios.get(url,{headers:{'Authorization':token}})
     .then(resp=>{
         if(resp.data.status==='Success'){
-            dispatch( setlatestPoste(resp.data.data))
+            dispatch( setlatestPoste(resp.data.data.filter(n=>n.course_offerings.switch_requests.status===null)));
             // console.log(resp.data.data)
             console.log(resp.data)
         }else{
@@ -193,14 +193,14 @@ export function callAxios(method, url, fx, errFx, options) {
   Axios[method](url, options)
 
   .then ( resp => {
-
+// debugger
       if(resp.data.status==='Success'){
 
           // Execute Callback
-          fx(resp.data.data);
+          fx(resp.data.data || resp.data.nModified);
 
       } else {
-          throw resp.data.error
+          throw resp.data.error;
       }
   })
   

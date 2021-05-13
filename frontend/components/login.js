@@ -22,11 +22,13 @@ function Login({ navigation }) {
       // debugger
         // let latitude = Math.floor(location.latitude)
         // let longitude = Math.ceil(location.longitude)
-        let latitude = location.latitude
-        let longitude = location.longitude
+        let latitude = location.latitude;
+        let longitude = location.longitude;
        
-	  // MIU Boundary's
-    if (
+    // MIU Boundary's
+    const testing = false;
+
+    if (testing ||
 
       // Between South & North Boundary
       ( latitude >= 41.0147347 && latitude <= 41.0321724) 
