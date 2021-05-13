@@ -60,7 +60,6 @@ export default function StudentOwnCourseView ({navigation, navigation:{navigate}
     
   }, [navigation]);
 
-debugger
   return (
 
     <ScrollView>

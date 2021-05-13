@@ -40,14 +40,14 @@ function Main({navigation}) {
     }
 
     return (
-        <ThemeProvider >
+        <View style={styles.container}>
          
-               <Button title='ListOfCourses' onPress={ListOfCoursesHundler}/>
-               <Button title='LatestPos' onPress={LatestPosHundler}/>
-               <Button title='My Classes & Switch Request' onPress={CreateNewSwitchRequestHundler}/>
-               <Button title='Logout' onPress={removeValue}/>
+         <View style={styles.buttonView}><Button buttonStyle={styles.buttons} title='List Of Courses with Switch Request Count' onPress={ListOfCoursesHundler}/></View>
+         <View style={styles.buttonView}><Button buttonStyle={styles.buttons} title='Latest Switch Request Posts' onPress={LatestPosHundler}/></View>
+         <View style={styles.buttonView}><Button buttonStyle={styles.buttons} title='My Classes & Switch Request' onPress={CreateNewSwitchRequestHundler}/></View>
+         <View style={styles.buttonView}><Button buttonStyle={styles.buttons} title='Logout' onPress={removeValue}/></View>
            
-        </ThemeProvider>
+        </View>
     )
 }
 
@@ -55,7 +55,15 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 0,
+    },
+    buttonView:{
+      margin: 20,
+      flex: 1
+    },
+    buttons:{
+      padding: 35,
+    
     }
 });
 
-export default Main
+export default Main;
