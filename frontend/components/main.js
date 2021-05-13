@@ -44,7 +44,7 @@ function Main({navigation}) {
          
                <Button title='ListOfCourses' onPress={ListOfCoursesHundler}/>
                <Button title='LatestPos' onPress={LatestPosHundler}/>
-               <Button title='CreateNewSwitchRequest' onPress={CreateNewSwitchRequestHundler}/>
+               <Button title='My Classes & Switch Request' onPress={CreateNewSwitchRequestHundler}/>
                <Button title='Logout' onPress={removeValue}/>
            
         </ThemeProvider>
