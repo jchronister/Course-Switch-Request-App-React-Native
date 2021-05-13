@@ -2,12 +2,31 @@ import * as React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Button, ThemeProvider,Text } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Main from './main'
-import myContext from './globalState'
+import myContext from './globalState';
+import * as ActionType from './action';
 
-function Home() {
-    // const [state, setState] = React.useState(true);
-    const [state, dispatch] = React.useContext(myContext)
+function Home({ navigation }) {
+    const [state, dispatch] = React.useContext(myContext);
+
+    const getData = async () => {
+        try {
+          const value = await AsyncStorage.getItem('token')
+          if(value !== null) {
+            dispatch(ActionType.updateToken(value));
+            navigation.navigate('main')
+          }
+        } catch(e) {
+          console.log(e)
+        }
+      }
+  
+
+
+    React.useEffect(()=>{
+        getData()
+    },[])
 
     return (
         <ThemeProvider >

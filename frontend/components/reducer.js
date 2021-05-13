@@ -22,6 +22,9 @@ const Reducer=(state,action)=>{
     if(action.type===ActionType.SET_LATEST_POST){
         return {...state,latestPost:action.payload}
     }
+    if(action.type===ActionType.RESEST_STATE){
+        return {...state,showHide:true,token:null,allCourses:[],CourseswichRequestedStudents:[],latestPost:[]}
+    }
 
     return state;
 }

@@ -1,5 +1,15 @@
 import * as React from 'react';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const storeData = async (value) => {
+    try {
+      await AsyncStorage.setItem('token', value)
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  
 
 
 // Axios Config
@@ -16,6 +26,7 @@ export const UPDATE_TOKEN ='UPDATE_TOKEN'
 export const SET_ALL_COURSES ='SET_ALL_COURSES'
 export const SET_SWETCH_REQUESTED_STUDENTS ='SET_SWETCH_REQUESTED_STUDENTS'
 export const SET_LATEST_POST ='SET_LATEST_POST'
+export const RESEST_STATE='RESEST_STATE'
 
 
 
@@ -27,10 +38,17 @@ export const changeShowHide=()=>{
 }
 
 
-const updateToken=(v)=>{
+export const updateToken=(v)=>{
+    Axios.defaults.headers.common['Authorization'] = v;
     return {
         type:UPDATE_TOKEN ,
         payload:v
+    }
+}
+export const resetState=(fx)=>{
+    fx()
+    return {
+        type:RESEST_STATE 
     }
 }
 
@@ -45,10 +63,12 @@ export const signin=(url, obj, dispatch, fx, errFx) => {
         if(resp.data.status==='Success'){
 
             // Set Axios Token
-            Axios.defaults.headers.common['Authorization'] = resp.data.data;
+            // Axios.defaults.headers.common['Authorization'] = resp.data.data;
 
             // Update User Info State
             dispatch(updateToken(resp.data.data))
+            console.log(resp.data.data)
+            storeData(resp.data.data)
 
             // Go to Main Page
             fx();
