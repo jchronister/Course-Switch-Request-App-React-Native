@@ -28,7 +28,8 @@
       "id-length": [2, {"min": 2, "max": 30, "exceptions": ["s", "i","a", "n", "id", "j"]}],
       "camelcase": "off",
       "valid-jsdoc": ["error"],
-      "require-jsdoc": "off"
+      "require-jsdoc": "off",
+      "react/prop-types": 0
   
       }
 }
