@@ -1,4 +1,5 @@
-/* eslint-disable react/prop-types */
+// Add/Modify Switch Request Component
+
 import React, {useEffect, useState} from 'react';
 import { StyleSheet, Text, SafeAreaView, View, ScrollView } from 'react-native';
 
@@ -12,10 +13,8 @@ import myContext from './globalState';
 
 export default function UpsertSwitchRequest ({navigation, route: {params}}){
 
+  // Get Token for Student_id
   const [{token}] = React.useContext(myContext);
-
-  // const currentCourseOfferingId = "6099792f44997eca685ab2ec"/////..../??????
-  // route:{param:{offering_id}}
   
   // Form State
   const [state, setState] = useState({
@@ -29,80 +28,80 @@ export default function UpsertSwitchRequest ({navigation, route: {params}}){
   const [error, setError] = React.useState(null);
   const [warning, setWarning] = React.useState(null);
 
-    // Clear Warning
-    useEffect( () => setWarning(null), [state]);
+  // Clear Warning
+  useEffect( () => setWarning(null), [state]);
 
-    // Retrieve Student Data
-    useEffect( () => {
+  // Retrieve Student Data
+  useEffect( () => {
 
-      // Verify Course Id
-      if (!(params && params.offering_id)) return setError("Error No Course Offering Id Passed");   
+    // Verify Course Id
+    if (!(params && params.offering_id)) return setError("Error No Course Offering Id Passed");   
 
-      // Read User Info From Token
-      const user = jwt(token, {complete: true});
+    // Read User Info From Token
+    const user = jwt(token, {complete: true});
 
-      // Request Data
-      callAxios("get", "/api/v1/courses/block/" + params.offering_id,
+    // Request Data
+    callAxios("get", "/api/v1/courses/block/" + params.offering_id,
 
-        // Set State with Returned Data
-        (data) => setState(s => {
+      // Set State with Modified Returned Data
+      (data) => setState(s => {
 
-          const info = {};
-      
-          // Get User Current Course
-          for (let n of data[0].course_offerings) {
-            if (n.students.reduce((a, n) => a || n.student_id === user.student_id, false)) {
-              info.currentCourseInfo = {
-                offering_id: n.offering_id,
-                course_id: n.course_id,
-                course_name: n.course_name,
-                instructor: n.instructor,
-              };
-              info.block_id = data[0].block_id;
+        const info = {};
+    
+        // Get User Current Course
+        for (let n of data[0].course_offerings) {
+          if (n.students.reduce((a, n) => a || n.student_id === user.student_id, false)) {
+            info.currentCourseInfo = {
+              offering_id: n.offering_id,
+              course_id: n.course_id,
+              course_name: n.course_name,
+              instructor: n.instructor,
+            };
+            info.block_id = data[0].block_id;
+            break;
+          }
+        }
+
+        // Get User Current Request Info
+        for (let n of data[0].course_offerings) {
+          for (let i of n.switch_requests) {
+            if (i.student_id === user.student_id) {
+
+              // Update Request State
+              info.status = i.status;
+              info.requestedCourseOfferingId = i.desired_course.offering_id;
+              info.notes = i.notes;
+              info.switchRequestId = i.request_id;
               break;
             }
           }
-
-          // Get User Current Request Info
-          for (let n of data[0].course_offerings) {
-            for (let i of n.switch_requests) {
-              if (i.student_id === user.student_id) {
-
-                // Update Request State
-                info.status = i.status;
-                info.requestedCourseOfferingId = i.desired_course.offering_id;
-                info.notes = i.notes;
-                info.switchRequestId = i.request_id;
-                break;
-              }
-            }
-            if (info.switchRequestId) break;
-          }
-          
-          // Get Courses Offered
-          info.courseOfferings = data[0].course_offerings.map(
-            ({offering_id, course_id, course_name, instructor}) =>
-            ({offering_id, course_id, course_name, instructor})
-          ).filter(n => !info.currentCourseInfo || n.offering_id !== info.currentCourseInfo.offering_id);
-
-          // Error User Not Scheduled for Course
-          if (info.currentCourseInfo && info.currentCourseInfo.offering_id !== params.offering_id) setError("User Not Currently in Selected Course");
-          
-          // I cause and Error ??? Cannot Modify while updating another component
-          // Set Header
-          // navigation.setOptions({headerTitle: info.switchRequestId ? "Edit Switch Request" : "Create Switch Request"});
-
-          setState({...s, ...info});
+          if (info.switchRequestId) break;
+        }
         
-        })
+        // Get Courses Offered
+        info.courseOfferings = data[0].course_offerings.map(
+          ({offering_id, course_id, course_name, instructor}) =>
+          ({offering_id, course_id, course_name, instructor})
+        ).filter(n => !info.currentCourseInfo || n.offering_id !== info.currentCourseInfo.offering_id);
 
-          // Data Fetch Error Fx
-        , setError
+        // Error User Not Scheduled for Course
+        if (info.currentCourseInfo && info.currentCourseInfo.offering_id !== params.offering_id) setError("User Not Currently in Selected Course");
+        
+        // I cause and Error ??? Cannot Modify while updating another component
+        // Set Header
+        // navigation.setOptions({headerTitle: info.switchRequestId ? "Edit Switch Request" : "Create Switch Request"});
 
-    );}, []);
+        setState({...s, ...info});
+      
+      })
+
+        // Data Fetch Error Fx
+      , setError
+
+  );}, []);
 
  
-    return (
+  return (
         <SafeAreaView>
         <ScrollView style={styles.containter}>
 
@@ -144,101 +143,104 @@ export default function UpsertSwitchRequest ({navigation, route: {params}}){
               value={state.notes}
               onChangeText={(text) => setState((s) => ({...s, notes: text}))}/>
 
-            <Text style={styles.title}>Status:</Text>
+            
 
-  {/* Status CheckBoxes */}
-  {state.switchRequestId &&
-  <View style={styles.status}>
-      <CheckBox
-        center
-        title='Active'
-        checkedIcon='dot-circle-o'
-        uncheckedIcon='circle-o'
-        checked={state.status === null}
-        onPress={() => setState({...state, status: null})}
-      />
-      <CheckBox
-        center
-        title='Completed'
-        checkedIcon='dot-circle-o'
-        uncheckedIcon='circle-o'
-        checked={state.status === "Completed"}
-        onPress={() => setState({...state, status: "Completed"})}
-      />
-  </View>
-  }
+            {/* Status CheckBoxes */}
+            {state.switchRequestId && <>
+              <Text style={styles.title}>Status:</Text>
+              <View style={styles.status}>
+                  <CheckBox
+                    center
+                    title='Active'
+                    checkedIcon='dot-circle-o'
+                    uncheckedIcon='circle-o'
+                    checked={state.status === null}
+                    onPress={() => setState({...state, status: null})}
+                  />
+                  <CheckBox
+                    center
+                    title='Completed'
+                    checkedIcon='dot-circle-o'
+                    uncheckedIcon='circle-o'
+                    checked={state.status === "Completed"}
+                    onPress={() => setState({...state, status: "Completed"})}
+                  />
+              </View>
+            </>}
 
-  {warning && <Text style={styles.error}>{warning}</Text>}
 
-  <View style={styles.buttons}>
+            {warning && <Text style={styles.error}>{warning}</Text>}
 
-    {/* Add/Update Button */}
-    <View style={styles.button}>
-      <Button
-        title={state.switchRequestId ? "Update" : "Add"}
-        onPress={()=>{
-          
-          // Update or Add Parameters
-          if (state.switchRequestId) {
-            var method = "put";
-            var url = "/api/v1/courses/switchrequests/" + state.switchRequestId;
-          } else {
-            method = "post";
-            url = "/api/v1/courses/switchrequests";            
-          }
 
-          // Send Request
-          callAxios(method, url, 
+            {/* Buttons */}
+            <View style={styles.buttons}>
 
-          // Handle Success
-          (data) => {
-            if (data === 1) {
-              navigation.goBack();
-            } else {
-              setWarning("Data Not Changed");
-            }
-          },
+              {/* Add/Update Button */}
+              <View style={styles.button}>
+                <Button
+                  title={state.switchRequestId ? "Update" : "Add"}
+                  onPress={()=>{
+                    
+                    // Update or Add Parameters
+                    if (state.switchRequestId) {
+                      var method = "put";
+                      var url = "/api/v1/courses/switchrequests/" + state.switchRequestId;
+                    } else {
+                      method = "post";
+                      url = "/api/v1/courses/switchrequests";            
+                    }
 
-          // Error Catch Fx
-          err => {
-            if (err === "Missing Data for: offering_id") {
-              setWarning("Please Select Course");
-            } else {
-              setError(err);
-            }
-          },
-          {offering_id: state.requestedCourseOfferingId, notes: state.notes, status: state.status, block_id: state.block_id}
-          );   
-        }}
-        />
-    </View>
+                    // Send Request
+                    callAxios(method, url, 
 
-    {/* Delete Button */}
-    {state.switchRequestId && <View style={styles.button}>
-      <Button
-        title="Delete"
-        onPress={()=>{ 
+                    // Handle Success
+                    (data) => {
+                      if (data === 1) {
+                        navigation.goBack();
+                      } else {
+                        setWarning("Data Not Changed");
+                      }
+                    },
 
-          callAxios("delete", "/api/v1/courses/switchrequests/" + state.switchRequestId, 
-          (data) => {
+                    // Error Catch Fx
+                    err => {
+                      if (err === "Missing Data for: offering_id") {
+                        setWarning("Please Select Course");
+                      } else {
+                        setError(err);
+                      }
+                    },
+                    {offering_id: state.requestedCourseOfferingId, notes: state.notes, status: state.status, block_id: state.block_id}
+                    );   
+                  }}
+                  />
+              </View>
 
-            if (data === 1) {
-              navigation.goBack();
-            } else {
-              setError("Internal Error: Switch Request Not Deleted");
-            }
-          },
-          setError);
-        }}
-      />
-    </View>}
+              {/* Delete Button */}
+              {state.switchRequestId && <View style={styles.button}>
+                <Button
+                  title="Delete"
+                  onPress={()=>{ 
 
-  </View>
+                    callAxios("delete", "/api/v1/courses/switchrequests/" + state.switchRequestId, 
+                    (data) => {
 
-</>}
-        </ScrollView>
-        </SafeAreaView>
-    );
+                      if (data === 1) {
+                        navigation.goBack();
+                      } else {
+                        setError("Internal Error: Switch Request Not Deleted");
+                      }
+                    },
+                    setError);
+                  }}/>
+              </View>}
+
+          </View>
+
+      </>}
+    </ScrollView>
+    </SafeAreaView>
+  );
 
 }
 
