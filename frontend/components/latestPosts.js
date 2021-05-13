@@ -15,6 +15,7 @@ function LatestPosts({navigation: {navigate}}) {
     const [state, dispatch] = React.useContext(myContext);
 
     const user = useMemo(() => jwt(state.token), []);
+    const func=()=>{dispatch(ActionType.changeShowHide())}
 
     React.useEffect(() => {
         ActionType.getLatestPost(state.token, dispatch);
@@ -24,14 +25,30 @@ function LatestPosts({navigation: {navigate}}) {
         <ThemeProvider>
             {state.latestPost && <FlatList
                 data={state.latestPost}
-                renderItem={({ item }) => <IndividualComponent data={item} navigate={navigate} user={user}/>}
+                renderItem={({ item }) => <IndividualComponent data={item} navigate={navigate} user={user} func={func}/>}
                 keyExtractor={item => item.course_offerings.switch_requests.request_id}
             />}
         </ThemeProvider>
     );
 }
 
-const IndividualComponent = ({ data, navigate, user }) => {
+const IndividualComponent = ({ data, navigate, user,func }) => {
+
+    const myEmailComposer=()=>{
+
+        // Open Email
+      MailComposer.composeAsync(
+          {recipients: data.course_offerings.switch_requests.student_email,
+          subject:'Class Switch Request',
+          body:'Hello ' + data.course_offerings.switch_requests.student_name +
+          ' I am interested in switching classes with you ' +
+          data.course_offerings.switch_requests.desired_course.course_id + " " + data.course_offerings.switch_requests.desired_course.course_name +
+          ' with ' +
+          data.course_offerings.course_id + " " + data.course_offerings.course_name
+        }).catch(e=>{console.log(e)});
+
+
+      }
 
     return (  
         <ThemeProvider>
@@ -48,20 +65,7 @@ const IndividualComponent = ({ data, navigate, user }) => {
                 // Email User of Switch Request
                 <Button
                   title='Contact via Email' 
-                  onPress={()=>{
-
-                    // Open Email
-                    MailComposer.composeAsync(
-                      {recipients: data.course_offerings.switch_requests.student_email,
-                      subject:'Class Switch Request',
-                      body:'Hello ' + data.course_offerings.switch_requests.student_name +
-                      ' I am interested in switching classes with you ' +
-                      data.course_offerings.switch_requests.desired_course.course_id + " " + data.course_offerings.switch_requests.desired_course.course_name +
-                      ' with ' +
-                      data.course_offerings.course_id + " " + data.course_offerings.course_name
-                    });
-        
-                  }}/>
+                  onPress={myEmailComposer}/>
 
                 // : User Owns Switch Request
                 :

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+const IP="10.10.14.216"
 
 const storeData = async (value) => {
     try {
@@ -14,7 +15,8 @@ const storeData = async (value) => {
 
 // Axios Config
 export const Axios = axios.create({
-  baseURL: "http://localhost:8000",
+    baseURL: "http://10.10.14.216:8000",
+//   baseURL: "http://localhost:8000",
   headers: {post: {"Content-Type": "application/json"}}
   }
 );
@@ -92,8 +94,8 @@ const setAllCourses=(v)=>{
 
 //function that update allcourses property of global state  
 export const getallCourses=(token,dispatch)=>{
-    let url='http://localhost:8000/api/v1/courses'
-    axios.get(url,{headers:{'Authorization':token}})
+    let url='/api/v1/courses'
+    Axios.get(url,{headers:{'Authorization':token}})
     .then(resp=>{
         if(resp.data.status==='Success'){
             dispatch( setAllCourses(resp.data.data))
@@ -116,8 +118,8 @@ const setSwetchRequest=(v)=>{
 
 //function that update CourseswichRequestedStudents property of global state  
 export const getswetchRequestedStudents=(token,dispatch,data)=>{
-    let url=`http://localhost:8000/api/v1/courses/${data}`
-    axios.get(url,{headers:{'Authorization':token}})
+    let url=`/api/v1/courses/${data}`
+    Axios.get(url,{headers:{'Authorization':token}})
     .then(resp=>{
         if(resp.data.status==='Success'){
             dispatch( setSwetchRequest(resp.data.data[0].course_offerings[0].switch_requests))
@@ -138,8 +140,8 @@ const setlatestPoste=(v)=>{
 }
 
 export const getLatestPost=(token,dispatch)=>{
-    let url=`http://localhost:8000/api/v1/courses/switchrequests`
-    axios.get(url,{headers:{'Authorization':token}})
+    let url=`/api/v1/courses/switchrequests`
+    Axios.get(url,{headers:{'Authorization':token}})
     .then(resp=>{
         if(resp.data.status==='Success'){
             dispatch( setlatestPoste(resp.data.data.filter(n=>n.course_offerings.switch_requests.status===null)));
