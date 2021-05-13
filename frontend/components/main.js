@@ -2,10 +2,29 @@ import * as React from 'react';
 import {  StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Button, ThemeProvider,Text } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ActionType from './action';
+import myContext from './globalState';
 
 
-function Main() {
-    const navigation=useNavigation()
+function Main({navigation}) {
+    const [state, dispatch] = React.useContext(myContext);
+    // const navigation=useNavigation()
+
+   const removeValue = async () => {
+        try {
+            console.log("Am here");
+           AsyncStorage.removeItem('token');
+          dispatch(ActionType.resetState(()=>{ navigation.navigate('home')}))
+        console.log('Done.')
+        console.log(state.token);
+
+        } catch(e) {
+          console.log(e);
+        }
+      
+        // console.log('Done.')
+      }
 
     const ListOfCoursesHundler=()=>{
         navigation.navigate('listofcourses')
@@ -23,9 +42,10 @@ function Main() {
     return (
         <ThemeProvider >
          
-               <Button title='List Of Courses' onPress={ListOfCoursesHundler}/>
-               <Button title='Latest Switch Reqest Posts' onPress={LatestPosHundler}/>
-               <Button title='My Classes & Switch Requests' onPress={CreateNewSwitchRequestHundler}/>
+               <Button title='ListOfCourses' onPress={ListOfCoursesHundler}/>
+               <Button title='LatestPos' onPress={LatestPosHundler}/>
+               <Button title='CreateNewSwitchRequest' onPress={CreateNewSwitchRequestHundler}/>
+               <Button title='Logout' onPress={removeValue}/>
            
         </ThemeProvider>
     )
