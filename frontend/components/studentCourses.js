@@ -1,8 +1,10 @@
-/* eslint-disable react/prop-types */
-import React, {useEffect, useState, useCallback} from 'react';
-import { StyleSheet, Text, SafeAreaView, View, ScrollView, FlatList} from 'react-native';
+// User Current Courses and Switch Requests
 
-import { CheckBox, Input, Button, Card } from 'react-native-elements';
+import React, {useEffect} from 'react';
+import { StyleSheet, Text, ScrollView, FlatList} from 'react-native';
+// SafeAreaView, View
+
+import { Button, Card } from 'react-native-elements';
 
 
 import {callAxios} from "./action";
@@ -58,7 +60,7 @@ export default function StudentOwnCourseView ({navigation, navigation:{navigate}
     
   }, [navigation]);
 
-
+debugger
   return (
 
     <ScrollView>
@@ -71,7 +73,7 @@ export default function StudentOwnCourseView ({navigation, navigation:{navigate}
         <FlatList
             data={courses}
             renderItem={n=><CourseInfo {...n} navigate={navigate}/>}
-            keyExtrator={n=>n.offering_id}/>
+            keyExtractor={n=>n.offering_id}/>
         }
 
     </ScrollView>
