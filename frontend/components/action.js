@@ -15,8 +15,8 @@ const storeData = async (value) => {
 
 // Axios Config
 export const Axios = axios.create({
-    baseURL: "http://10.10.14.216:8000",
-//   baseURL: "http://localhost:8000",
+    // baseURL: "http://10.10.14.216:8000",
+  baseURL: "http://localhost:8000",
   headers: {post: {"Content-Type": "application/json"}}
   }
 );

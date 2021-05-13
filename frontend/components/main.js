@@ -42,10 +42,10 @@ function Main({navigation}) {
     return (
         <View style={styles.container}>
          
-         <View style={styles.buttonView}><Button buttonStyle={styles.buttons} title='List Of Courses with Switch Request Count' onPress={ListOfCoursesHundler}/></View>
-         <View style={styles.buttonView}><Button buttonStyle={styles.buttons} title='Latest Switch Request Posts' onPress={LatestPosHundler}/></View>
-         <View style={styles.buttonView}><Button buttonStyle={styles.buttons} title='My Classes & Switch Request' onPress={CreateNewSwitchRequestHundler}/></View>
-         <View style={styles.buttonView}><Button buttonStyle={styles.buttons} title='Logout' onPress={removeValue}/></View>
+         <Button containerStyle={styles.buttonView} buttonStyle={styles.buttons} title='List Of Courses with Switch Request Count' onPress={ListOfCoursesHundler}/>
+         <Button containerStyle={styles.buttonView} buttonStyle={styles.buttons} title='Latest Switch Request Posts' onPress={LatestPosHundler}/>
+         <Button containerStyle={styles.buttonView} buttonStyle={styles.buttons} title='My Classes & Switch Request' onPress={CreateNewSwitchRequestHundler}/>
+         <Button containerStyle={styles.buttonView} buttonStyle={styles.buttons} title='Logout' onPress={removeValue}/>
            
         </View>
     )
