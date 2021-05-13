@@ -15,24 +15,31 @@ function LatestPosts({navigation: {navigate}}) {
     const [state, dispatch] = React.useContext(myContext);
 
     const user = useMemo(() => jwt(state.token), []);
-    const func=()=>{dispatch(ActionType.changeShowHide())}
+    const func=()=>{dispatch(ActionType.changeShowHide());}
+
+    const [error, setError] = React.useState(null);
 
     React.useEffect(() => {
         ActionType.getLatestPost(state.token, dispatch);
     }, []);
 
     return (
+        <View style={styles.container}>
+
+        {error && <Text style={styles.error}>{error}</Text>}
+
         <ThemeProvider>
             {state.latestPost && <FlatList
                 data={state.latestPost}
-                renderItem={({ item }) => <IndividualComponent data={item} navigate={navigate} user={user} func={func}/>}
+                renderItem={({ item }) => <IndividualComponent data={item} navigate={navigate} user={user} errFx={setError}/>}
                 keyExtractor={item => item.course_offerings.switch_requests.request_id}
             />}
         </ThemeProvider>
+        </View>
     );
 }
 
-const IndividualComponent = ({ data, navigate, user,func }) => {
+const IndividualComponent = ({ data, navigate, user, errFx }) => {
 
     const myEmailComposer=()=>{
 
@@ -45,10 +52,10 @@ const IndividualComponent = ({ data, navigate, user,func }) => {
           data.course_offerings.switch_requests.desired_course.course_id + " " + data.course_offerings.switch_requests.desired_course.course_name +
           ' with ' +
           data.course_offerings.course_id + " " + data.course_offerings.course_name
-        }).catch(e=>{console.log(e)});
+        }).catch(err=>errFx(err.message));
 
 
-      }
+      };
 
     return (  
         <ThemeProvider>
@@ -94,7 +101,11 @@ const styles = StyleSheet.create({
         padding: 10,
         fontSize: 20
     },
-    info:{ margin: 10, padding: 5, color: 'grey' }
+    info:{ margin: 10, padding: 5, color: 'grey' },
+    error: {
+      color:"red",
+      fontSize:20
+    }
 });
 
 

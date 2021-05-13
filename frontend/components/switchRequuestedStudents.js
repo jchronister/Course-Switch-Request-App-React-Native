@@ -31,7 +31,7 @@ const IndividualComponent = ({ data }) => {
             <View style={{ backgroundColor: 'white', flex: 1, borderWidth: 10, borderRadius: 10, borderColor: 'black' }}>
                 <Text h4 style={{ margin: 10, padding: 10, color: 'blue' }}>student_name : {data.student_name}</Text>
                 <Text h4 style={{ margin: 10, padding: 10, color: 'grey' }}> desired_course_id : {data.desired_course.course_id}</Text>
-                <Text h4 style={{ margin: 10, padding: 10, color: 'purpel' }}>desired_course_name : {data.desired_course.course_name}</Text>
+                <Text h4 style={{ margin: 10, padding: 10, color: 'purple' }}>desired_course_name : {data.desired_course.course_name}</Text>
 
             </View>
         </ThemeProvider>

@@ -1,8 +1,8 @@
 // User Current Courses and Switch Requests
 
 import React, {useEffect} from 'react';
-import { StyleSheet, Text, ScrollView, FlatList} from 'react-native';
-// SafeAreaView, View
+import { StyleSheet, Text, View, FlatList} from 'react-native';
+// SafeAreaView
 
 import { Button, Card } from 'react-native-elements';
 
@@ -62,7 +62,7 @@ export default function StudentOwnCourseView ({navigation, navigation:{navigate}
 
   return (
 
-    <ScrollView>
+        <View style={styles.container}>
 
         {/* Show Error */}
         {error ? <Text style={styles.error}>{error}</Text>
@@ -74,8 +74,8 @@ export default function StudentOwnCourseView ({navigation, navigation:{navigate}
             renderItem={n=><CourseInfo {...n} navigate={navigate}/>}
             keyExtractor={n=>n.offering_id}/>
         }
-
-    </ScrollView>
+        </View>
+    
 
   );
 

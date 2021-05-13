@@ -1,7 +1,7 @@
 // Add/Modify Switch Request Component
 
 import React, {useEffect, useState} from 'react';
-import { StyleSheet, Text, SafeAreaView, View, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 
 import { CheckBox, Input, Button } from 'react-native-elements';
 
@@ -102,7 +102,7 @@ export default function UpsertSwitchRequest ({navigation, route: {params}}){
 
  
   return (
-        <SafeAreaView>
+        
         <ScrollView style={styles.containter}>
 
             {error ? <Text style={styles.error}>{error}</Text>
@@ -239,7 +239,7 @@ export default function UpsertSwitchRequest ({navigation, route: {params}}){
 
       </>}
     </ScrollView>
-    </SafeAreaView>
+   
   );
 
 }
