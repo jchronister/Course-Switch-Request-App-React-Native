@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, SafeAreaView, View } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
 import { multiply } from 'react-native-reanimated';
 import { Input, ThemeProvider, Text, Button } from 'react-native-elements';
 import myContext from './globalState'
@@ -68,14 +68,14 @@ function Signup({ navigation }) {
 
     return (
         <ThemeProvider>
-            <SafeAreaView >
+            <ScrollView>
                 <Text h3>Signup Please</Text>
                 <Input placeholder='Name' autoFocus={true} style={styles.searchInput} value={mystate.student_Name} onChangeText={(text) => { studentNameHundler(text) }} />
                 <Input placeholder='Email' style={styles.searchInput} value={mystate.email} onChangeText={(text) => { emailHundler(text) }} />
                 <Input placeholder='Password' style={styles.searchInput} value={mystate.password} onChangeText={(text) => { passwordHundler(text) }} />
                 {error && <Text>{error}</Text>}
                 <Button  title='Submit' onPress={submitHundler} />
-            </SafeAreaView>
+            </ScrollView>
         </ThemeProvider>
     )
 }

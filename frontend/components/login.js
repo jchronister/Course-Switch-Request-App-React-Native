@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, SafeAreaView, View } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
 import { multiply } from 'react-native-reanimated';
 import { Button, ThemeProvider,Text,Input } from 'react-native-elements';
 import * as ActionType from './action'
@@ -79,7 +79,7 @@ function Login({ navigation }) {
 
     return (
         <ThemeProvider>
-            <SafeAreaView >
+            <ScrollView>
                 <Text h3>Login Please</Text>
 
                 <Input  style={styles.searchInput} autoFocus={true} placeholder="Email" value={state.email} onChangeText={(text) => { emailHundler(text) }} />
@@ -87,7 +87,7 @@ function Login({ navigation }) {
 
                 {error && <Text>{error}</Text>}
                 <Button title='Submit' onPress={submitHundler} />
-            </SafeAreaView>
+            </ScrollView>
         </ThemeProvider>
     )
 }
