@@ -10,7 +10,7 @@ import jwt from "jwt-decode";
 import * as MailComposer from 'expo-mail-composer';
 
 
-function LatestPosts({navigation: {navigate}}) {
+function LatestPosts({navigation, navigation: {navigate}}) {
 
     const [state, dispatch] = React.useContext(myContext);
 
@@ -19,9 +19,15 @@ function LatestPosts({navigation: {navigate}}) {
 
     const [error, setError] = React.useState(null);
 
+    // Execute on Focus
     React.useEffect(() => {
+
+      //  Return Listener for Unmount
+      return navigation.addListener('focus', () => {
         ActionType.getLatestPost(state.token, dispatch);
-    }, []);
+      });
+      
+    }, [navigation]);
 
     return (
         <View style={styles.container}>
