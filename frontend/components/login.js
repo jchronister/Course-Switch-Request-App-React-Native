@@ -26,7 +26,7 @@ function Login({ navigation }) {
         let longitude = location.longitude;
        
     // MIU Boundary's
-    const testing = true;
+    const testing = false;
 
     if (testing ||
 
