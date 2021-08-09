@@ -1,10 +1,5 @@
 "use strict";
 
-
-// Shell Connection
-// mongo "mongodb+srv://cluster0.5yjks.mongodb.net/myFirstDatabase" --username user1
-// C4U89mZsd
-
 var express = require('express'); 
 var router = express.Router();
 const createError = require('http-errors');

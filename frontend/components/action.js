@@ -1,15 +1,14 @@
 import * as React from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const IP="10.10.14.216"
 
 const storeData = async (value) => {
     try {
-      await AsyncStorage.setItem('token', value)
+      await AsyncStorage.setItem('token', value);
     } catch (e) {
       console.log(e);
     }
-  }
+  };
   
 
 
