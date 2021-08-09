@@ -1,6 +1,6 @@
 # CS571 - Mobile Application Development
 
-## Course Switch Request App - React Native
+## Course Switch Request App - Express Server
 
 ### Application Description
 A mobile application to help MIU students find another student to switch their courses/sections with them. 
